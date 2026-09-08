@@ -14,6 +14,29 @@
         .slide { display: none; }
         .slide.active { display: flex; }
         pre code { font-family: 'Fira Code', 'Courier New', Courier, monospace; }
+        
+        /* 程式碼行點擊效果 */
+        .code-line {
+            display: flex;
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .code-line:hover {
+            background-color: rgba(56, 189, 248, 0.15);
+        }
+        .code-line.selected {
+            background-color: rgba(56, 189, 248, 0.25);
+            border-left: 3px solid #38bdf8;
+        }
+        .line-num {
+            width: 2rem;
+            color: #64748b;
+            text-align: right;
+            padding-right: 0.75rem;
+            user-select: none;
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans h-screen flex flex-col justify-between overflow-hidden select-none">
@@ -57,23 +80,27 @@
         <section class="slide flex-col max-w-5xl mx-auto w-full space-y-6">
             <h2 class="text-2xl md:text-3xl font-bold text-cyan-400 border-b border-slate-700 pb-2">1. if...else if...else 語法結構</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 語法說明 -->
-                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
-                    <h3 class="text-lg font-bold text-amber-400 mb-3"><i class="fa-solid fa-code"></i> 語法格式</h3>
-                    <pre class="bg-slate-900 p-4 rounded text-xs md:text-sm font-mono text-emerald-300 border border-slate-700 overflow-x-auto">
-if (條件A) {
-    // 當「條件A」成立時執行
-} 
-else if (條件B) {
-    // 當「條件A」不成立，且「條件B」成立時執行
-} 
-else {
-    // 以上條件皆不成立時執行（可選）
-}</pre>
-                    <ul class="text-xs text-slate-300 mt-3 space-y-1 list-disc list-inside">
-                        <li><strong>順序檢查：</strong>由上往下比對，命中即跳出。</li>
-                        <li><strong>預設備用：</strong>全部不成立時執行 <code class="text-amber-400">else</code>。</li>
-                    </ul>
+                <!-- 語法說明與互動程式碼 -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-amber-400"><i class="fa-solid fa-code"></i> 語法格式 (點擊各行查看說明)</h3>
+                    </div>
+                    <div class="bg-slate-900 p-3 rounded text-xs md:text-sm font-mono text-emerald-300 border border-slate-700">
+                        <div class="code-line" onclick="explainLine('elseif', 1, this)"><span class="line-num">1</span><span>if (條件A) {</span></div>
+                        <div class="code-line" onclick="explainLine('elseif', 2, this)"><span class="line-num">2</span><span class="pl-4">// 當「條件A」成立時執行的程式碼</span></div>
+                        <div class="code-line" onclick="explainLine('elseif', 3, this)"><span class="line-num">3</span><span>}</span></div>
+                        <div class="code-line" onclick="explainLine('elseif', 4, this)"><span class="line-num">4</span><span>else if (條件B) {</span></div>
+                        <div class="code-line" onclick="explainLine('elseif', 5, this)"><span class="line-num">5</span><span class="pl-4">// 當「條件A」不成立且「條件B」成立時執行</span></div>
+                        <div class="code-line" onclick="explainLine('elseif', 6, this)"><span class="line-num">6</span><span>}</span></div>
+                        <div class="code-line" onclick="explainLine('elseif', 7, this)"><span class="line-num">7</span><span>else {</span></div>
+                        <div class="code-line" onclick="explainLine('elseif', 8, this)"><span class="line-num">8</span><span class="pl-4">// 以上條件皆不成立時的預設執行區塊</span></div>
+                        <div class="code-line" onclick="explainLine('elseif', 9, this)"><span class="line-num">9</span><span>}</span></div>
+                    </div>
+
+                    <!-- 即時行數解說顯示區 -->
+                    <div id="elseif-explain" class="bg-slate-900/90 p-3 rounded-lg border border-cyan-500/30 text-xs text-cyan-200 min-h-[65px] flex items-center">
+                        💡 提示：請點擊上方程式碼的任意行數，即可查看該行的詳細解說！
+                    </div>
                 </div>
 
                 <!-- 流程圖控制區 -->
@@ -106,21 +133,26 @@ else {
         <section class="slide flex-col max-w-5xl mx-auto w-full space-y-6">
             <h2 class="text-2xl md:text-3xl font-bold text-cyan-400 border-b border-slate-700 pb-2">2. 巢狀 if (Nested if) 敘述</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 語法 -->
-                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
-                    <h3 class="text-lg font-bold text-amber-400 mb-3"><i class="fa-solid fa-layer-group"></i> 巢狀結構語法</h3>
-                    <pre class="bg-slate-900 p-4 rounded text-xs font-mono text-emerald-300 border border-slate-700 overflow-x-auto">
-if (條件A) {
-    // 當 外層條件A 為 True
-    if (條件B) {
-        // A 與 B 皆為 True
-    } else {
-        // A 為 True，B 為 False
-    }
-} else {
-    // 外層條件A 為 False
-}</pre>
-                    <p class="text-xs text-slate-300 mt-2">適用於「滿足第一階段條件後，再進行第二階段精細分類」的情境（如門票票價計算）。</p>
+                <!-- 語法說明與互動程式碼 -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-3">
+                    <h3 class="text-lg font-bold text-amber-400"><i class="fa-solid fa-layer-group"></i> 巢狀結構語法 (點擊各行查看說明)</h3>
+                    <div class="bg-slate-900 p-3 rounded text-xs md:text-sm font-mono text-emerald-300 border border-slate-700">
+                        <div class="code-line" onclick="explainLine('nested', 1, this)"><span class="line-num">1</span><span>if (條件A) {</span></div>
+                        <div class="code-line" onclick="explainLine('nested', 2, this)"><span class="line-num">2</span><span class="pl-4">// 外層條件 A 成立，進入內層檢查</span></div>
+                        <div class="code-line" onclick="explainLine('nested', 3, this)"><span class="line-num">3</span><span class="pl-4">if (條件B) {</span></div>
+                        <div class="code-line" onclick="explainLine('nested', 4, this)"><span class="line-num">4</span><span class="pl-8">// 條件 A 與 條件 B 皆為 True</span></div>
+                        <div class="code-line" onclick="explainLine('nested', 5, this)"><span class="line-num">5</span><span class="pl-4">} else {</span></div>
+                        <div class="code-line" onclick="explainLine('nested', 6, this)"><span class="line-num">6</span><span class="pl-8">// 條件 A 為 True，但條件 B 為 False</span></div>
+                        <div class="code-line" onclick="explainLine('nested', 7, this)"><span class="line-num">7</span><span class="pl-4">}</span></div>
+                        <div class="code-line" onclick="explainLine('nested', 8, this)"><span class="line-num">8</span><span>} else {</span></div>
+                        <div class="code-line" onclick="explainLine('nested', 9, this)"><span class="line-num">9</span><span class="pl-4">// 外層條件 A 為 False（不滿足第一關門檻）</span></div>
+                        <div class="code-line" onclick="explainLine('nested', 10, this)"><span class="line-num">10</span><span>}</span></div>
+                    </div>
+
+                    <!-- 即時行數解說顯示區 -->
+                    <div id="nested-explain" class="bg-slate-900/90 p-3 rounded-lg border border-indigo-500/30 text-xs text-indigo-200 min-h-[65px] flex items-center">
+                        💡 提示：點擊內層或外層程式碼行，拆解「分層過濾」的邏輯。
+                    </div>
                 </div>
 
                 <!-- 流程圖隱藏/顯示區 -->
@@ -301,6 +333,46 @@ if (條件A) {
         function toggleAnswer(id) {
             const el = document.getElementById(id);
             el.classList.toggle('hidden');
+        }
+
+        // 行數點擊解說邏輯
+        const lineExplanations = {
+            elseif: {
+                1: "<strong>第 1 行 [if (條件A)]：</strong>程式的第一關。若條件 A 成立 (true)，會執行大括號內第 2 行的程式碼，並自動跳過後續所有的 else if 與 else。",
+                2: "<strong>第 2 行 [區塊 A]：</strong>只有在條件 A 為 true 時才會執行此區塊。",
+                3: "<strong>第 3 行 [}]：</strong>條件 A 區塊結束點。",
+                4: "<strong>第 4 行 [else if (條件B)]：</strong>當條件 A 不成立 (false) 時，程式才會來到這裡檢查條件 B。",
+                5: "<strong>第 5 行 [區塊 B]：</strong>當條件 A 為 false 且條件 B 為 true 時執行。",
+                6: "<strong>第 6 行 [}]：</strong>條件 B 區塊結束點。",
+                7: "<strong>第 7 行 [else]：</strong>最後的備用路徑。當前面的條件 A、條件 B 全部都不成立 (false) 時會自動執行此處。",
+                8: "<strong>第 8 行 [預設區塊]：</strong>所有條件皆不成立時的執行程式碼。",
+                9: "<strong>第 9 行 [}]：</strong>整個多重選擇結構結束。"
+            },
+            nested: {
+                1: "<strong>第 1 行 [外層 if]：</strong>第一階段門檻檢查。條件 A 必須先成立，才能進到裡面的第二階段。",
+                2: "<strong>第 2 行 [註解]：</strong>進入 outer 區塊內部。",
+                3: "<strong>第 3 行 [內層 if]：</strong>第二階段精細檢查。只有外層條件 A 為 true 時才會來到這行評估條件 B。",
+                4: "<strong>第 4 行 [雙重成立]：</strong>此處代表「條件 A 為真」且「條件 B 也為真」的情境。",
+                5: "<strong>第 5 行 [內層 else]：</strong>代表「條件 A 為真」，但「條件 B 為假」的情境。",
+                6: "<strong>第 6 行 [A真B假區塊]：</strong>條件 B 不成立時執行的區塊。",
+                7: "<strong>第 7 行 [}]：</strong>內層 if 結構結束。",
+                8: "<strong>第 8 行 [外層 else]：</strong>當第一關條件 A 就不成立 (false) 時直接來到這裡，完全不會進入內層條件 B 的判斷。",
+                9: "<strong>第 9 行 [A假區塊]：</strong>外層條件 A 失敗時執行的備用方案。",
+                10: "<strong>第 10 行 [}]：</strong>整個巢狀結構結束。"
+            }
+        };
+
+        function explainLine(type, lineNum, element) {
+            // 切換選取樣式
+            const parent = element.parentElement;
+            parent.querySelectorAll('.code-line').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+
+            // 顯示解說文字
+            const displayEl = document.getElementById(`${type}-explain`);
+            if (lineExplanations[type] && lineExplanations[type][lineNum]) {
+                displayEl.innerHTML = lineExplanations[type][lineNum];
+            }
         }
 
         // 頁面1：互動想法
