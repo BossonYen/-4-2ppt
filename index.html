@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4-2 選擇結構 (if...else if...else & 巢狀 if)</title>
+    <!-- Tailwind CSS (樣式庫) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome (圖示庫) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Mermaid.js (用於動態渲染流程圖) -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        .slide { display: none; }
+        .slide.active { display: flex; }
+        pre code { font-family: 'Fira Code', 'Courier New', Courier, monospace; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans h-screen flex flex-col justify-between overflow-hidden select-none">
+
+    <!-- 頂部導覽列 -->
+    <header class="bg-slate-800 border-b border-slate-700 px-6 py-3 flex justify-between items-center z-10">
+        <h1 class="text-xl font-bold text-cyan-400 flex items-center gap-2">
+            <i class="fa-solid fa-code"></i> 選擇結構 4-2 講義簡報
+        </h1>
+        <div class="text-sm text-slate-400">
+            <span id="current-slide">1</span> / <span id="total-slides">6</span>
+        </div>
+    </header>
+
+    <!-- 簡報主體區域 -->
+    <main class="flex-1 relative overflow-y-auto p-6 md:p-12 flex items-center justify-center">
+
+        <!-- 頁面 1: 首頁與觀念介紹 -->
+        <section class="slide active flex-col items-center justify-center text-center max-w-4xl mx-auto space-y-6">
+            <span class="bg-cyan-500/20 text-cyan-300 px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide border border-cyan-500/30">C++ 程式設計基礎</span>
+            <h2 class="text-4xl md:text-5xl font-extrabold text-white leading-tight">4-2 多重選擇與巢狀結構</h2>
+            <p class="text-slate-300 text-lg max-w-2xl leading-relaxed">
+                現實生活中的決策往往不只「是與否」。本單元帶你掌握 <code class="text-amber-400 font-mono">if...else if...else</code> 與 <code class="text-amber-400 font-mono">巢狀 if</code>，處理更複雜的多條件判斷！
+            </p>
+            <div class="bg-slate-800/80 p-6 rounded-xl border border-slate-700 text-left w-full shadow-xl">
+                <h3 class="text-cyan-400 font-bold mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb"></i> 互動思考：生活中的情境
+                </h3>
+                <p class="text-slate-300 text-sm mb-4">
+                    冷氣溫控：>30°C開冷氣、<18°C開暖氣，其餘送風。你還能想到哪些多條件的生活例子？
+                </p>
+                <div class="flex gap-2">
+                    <input type="text" id="thinking-input" placeholder="例如：紅綠燈號誌判斷、購物折扣卡別..." class="bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm flex-1 focus:outline-none focus:border-cyan-400">
+                    <button onclick="addIdea()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded text-sm transition">分享想法</button>
+                </div>
+                <ul id="idea-list" class="mt-3 text-sm text-cyan-200 list-disc list-inside space-y-1"></ul>
+            </div>
+        </section>
+
+        <!-- 頁面 2: if...else if...else 語法與流程圖 -->
+        <section class="slide flex-col max-w-5xl mx-auto w-full space-y-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-cyan-400 border-b border-slate-700 pb-2">1. if...else if...else 語法 structure</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 語法說明 -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+                    <h3 class="text-lg font-bold text-amber-400 mb-3"><i class="fa-solid fa-code"></i> 語法格式</h3>
+                    <pre class="bg-slate-900 p-4 rounded text-xs md:text-sm font-mono text-emerald-300 border border-slate-700 overflow-x-auto">
+if (條件A) {
+    // 當「條件A」成立時執行
+} 
+else if (條件B) {
+    // 當「條件A」不成立，且「條件B」成立時執行
+} 
+else {
+    // 以上條件皆不成立時執行（可選）
+}</pre>
+                    <ul class="text-xs text-slate-300 mt-3 space-y-1 list-disc list-inside">
+                        <li><strong>順序檢查：</strong>由上往下比對，命中即跳出。</li>
+                        <li><strong>預設備用：</strong>全部不成立時執行 <code class="text-amber-400">else</code>。</li>
+                    </ul>
+                </div>
+
+                <!-- 流程圖控制區 -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 flex flex-col items-center justify-center text-center">
+                    <h3 class="text-lg font-bold text-cyan-300 mb-2"><i class="fa-solid fa-sitemap"></i> 邏輯流程圖</h3>
+                    <p class="text-xs text-slate-400 mb-4">點擊下方按鈕以展開/顯示流程圖</p>
+                    
+                    <button onclick="toggleFlowchart('flowchart-1')" class="bg-cyan-600 hover:bg-cyan-500 text-white font-medium px-4 py-2 rounded-lg shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-eye"></i> 顯示/隱藏 流程圖
+                    </button>
+
+                    <div id="flowchart-1" class="hidden mt-4 w-full bg-slate-900 p-4 rounded-lg border border-slate-700 overflow-x-auto text-left">
+                        <div class="mermaid">
+                        graph TD
+                            Start([開始]) --> Cond1{條件 A}
+                            Cond1 -- True --> Act1[執行 區塊 A]
+                            Cond1 -- False --> Cond2{條件 B}
+                            Cond2 -- True --> Act2[執行 區塊 B]
+                            Cond2 -- False --> ActElse[執行 Else 備用區塊]
+                            Act1 --> End([離開程式])
+                            Act2 --> End
+                            ActElse --> End
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 頁面 3: 巢狀 if 敘述與流程圖 -->
+        <section class="slide flex-col max-w-5xl mx-auto w-full space-y-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-cyan-400 border-b border-slate-700 pb-2">2. 巢狀 if (Nested if) 敘述</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 語法 -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700">
+                    <h3 class="text-lg font-bold text-amber-400 mb-3"><i class="fa-solid fa-layer-group"></i> 巢狀結構語法</h3>
+                    <pre class="bg-slate-900 p-4 rounded text-xs font-mono text-emerald-300 border border-slate-700 overflow-x-auto">
+if (條件A) {
+    // 當 外層條件A 為 True
+    if (條件B) {
+        // A 與 B 皆為 True
+    } else {
+        // A 為 True，B 為 False
+    }
+} else {
+    // 外層條件A 為 False
+}</pre>
+                    <p class="text-xs text-slate-300 mt-2">適用於「滿足第一階段條件後，再進行第二階段精細分類」的情境（如門票票價計算）。</p>
+                </div>
+
+                <!-- 流程圖隱藏/顯示區 -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 flex flex-col items-center justify-center text-center">
+                    <h3 class="text-lg font-bold text-cyan-300 mb-2"><i class="fa-solid fa-diagram-project"></i> 巢狀流程圖</h3>
+                    <p class="text-xs text-slate-400 mb-4">先請學生思考分流邏輯，再點擊展示</p>
+                    
+                    <button onclick="toggleFlowchart('flowchart-2')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2 rounded-lg shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-eye"></i> 顯示/隱藏 流程圖
+                    </button>
+
+                    <div id="flowchart-2" class="hidden mt-4 w-full bg-slate-900 p-4 rounded-lg border border-slate-700 overflow-x-auto text-left">
+                        <div class="mermaid">
+                        graph TD
+                            Start([開始]) --> Outer{外層條件 A}
+                            Outer -- True --> Inner{內層條件 B}
+                            Outer -- False --> ElseOuter[外層 Else 區塊]
+                            Inner -- True --> ActB1[A真 & B真 區塊]
+                            Inner -- False --> ActB2[A真 & B假 區塊]
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 頁面 4: 互動測驗 1 & 2 (三角形判斷 & 薪資計算) -->
+        <section class="slide flex-col max-w-5xl mx-auto w-full space-y-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-cyan-400 border-b border-slate-700 pb-2">動手做練習 (1 & 2)</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 題型 1: 三角形填空 -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-3">
+                    <h3 class="text-base font-bold text-emerald-400"><i class="fa-solid fa-pen"></i> 練習 1：三角形判斷填空</h3>
+                    <p class="text-xs text-slate-300">請按按鈕對照填空答案 (A ~ E)：</p>
+                    <div class="space-y-2 text-xs font-mono bg-slate-900 p-3 rounded text-slate-300">
+                        <div>A: <span class="text-slate-500">using namespace std;</span></div>
+                        <div>B: <span class="text-slate-500">a <= 0 || b <= 0 || c <= 0</span></div>
+                        <div>C: <span class="text-slate-500">a + b <= c</span></div>
+                        <div>D: <span class="text-slate-500">sum_sq == c_sq</span></div>
+                        <div>E: <span class="text-slate-500">sum_sq > c_sq</span></div>
+                    </div>
+                    <button onclick="toggleAnswer('quiz1-ans')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-2 rounded transition">
+                        揭曉答案
+                    </button>
+                    <div id="quiz1-ans" class="hidden text-xs text-emerald-300 bg-emerald-950/50 p-2 rounded border border-emerald-800">
+                        <strong>答案解析：</strong><br>
+                        A: using namespace std;<br>
+                        B: a <= 0 || b <= 0 || c <= 0 (檢查正數)<br>
+                        C: a + b <= c (兩邊大於第三邊之反向條件)<br>
+                        D: sum_sq == c_sq (畢氏定理直角)<br>
+                        E: sum_sq > c_sq (銳角條件)
+                    </div>
+                </div>
+
+                <!-- 題型 2: 薪資計算互動 -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-3">
+                    <h3 class="text-base font-bold text-amber-400"><i class="fa-solid fa-calculator"></i> 練習 2：時數薪資即時試算</h3>
+                    <p class="text-xs text-slate-300">測試測資（如：80, 59, 70, 88, 100）查看程式計算結果：</p>
+                    
+                    <div class="flex gap-2">
+                        <input type="number" id="work-hours" placeholder="輸入時數 (例如 80)" class="bg-slate-900 border border-slate-600 rounded px-3 py-1.5 text-xs text-white flex-1 focus:outline-none">
+                        <button onclick="calculateSalary()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-3 py-1.5 rounded transition">計算薪資</button>
+                    </div>
+
+                    <div id="salary-result" class="bg-slate-900 p-3 rounded text-xs font-mono text-amber-300 border border-slate-700 min-h-[50px] flex items-center">
+                        請輸入工作時數進行計算...
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 頁面 5: 互動測驗 3 & 4 (閏年除錯 & 象限判斷) -->
+        <section class="slide flex-col max-w-5xl mx-auto w-full space-y-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-cyan-400 border-b border-slate-700 pb-2">動手做練習 (3 & 4)</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 題型 3: 閏年 Code Review (找錯) -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-3">
+                    <h3 class="text-base font-bold text-rose-400"><i class="fa-solid fa-bug"></i> 練習 3：閏年判斷程式 Code Review (4處錯誤)</h3>
+                    <p class="text-xs text-slate-300">請找出語法與邏輯錯誤：</p>
+                    <button onclick="toggleAnswer('quiz3-ans')" class="w-full bg-rose-600 hover:bg-rose-500 text-white text-xs py-2 rounded transition">
+                        顯示錯誤分析與修正
+                    </button>
+                    <div id="quiz3-ans" class="hidden text-xs text-rose-200 bg-rose-950/50 p-3 rounded border border-rose-800 space-y-1">
+                        <p>1. <strong>語法錯：</strong> <code class="text-white">std::cin >> year</code> 漏掉分號 <code class="text-amber-300 font-bold font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono font-mono text-white font-bold cursor-pointer">year % 4 == 0</span>，缺少 `;`。</p>
+                        <p>2. <strong>邏輯條件反特例：</strong> 最嚴格的特例判斷（<code class="text-white">% 4000</code>, <code class="text-white">% 400</code>）被擺在最後面，會被第一個 <code class="text-white">year % 4 == 0</code> 攔截。</p>
+                        <p>3. <strong>比較運算子錯誤：</strong> <code class="text-white">year % 400 = 0</code> 寫成賦值運算，應為 <code class="text-white">==</code>。</p>
+                        <p>4. <strong>閏年定義規則錯：</strong> 4000的倍數應為平年，400的倍數應為閏年。</p>
+                    </div>
+                </div>
+
+                <!-- 題型 4: 象限判斷題提示 -->
+                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-3 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-sky-400"><i class="fa-solid fa-compass"></i> 練習 4：象限判斷邏輯</h3>
+                        <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                            引導學生思考：透過多重分支遞進，先排除了點在原點與兩軸（<code class="text-amber-300">x==0</code> 或 <code class="text-amber-300">y==0</code>）的情況。<br><br>
+                            最後剩餘的條件自動進入四大象限判斷！
+                        </p>
+                    </div>
+                    <div class="bg-slate-900 p-3 rounded text-xs border border-slate-700 text-slate-400">
+                        <span class="text-cyan-400">💡 教學 Tips:</span> 提醒學生程式邏輯中「邏輯與 <code class="text-amber-300">&amp;&amp;</code>」與「獨佔條件」的次序關係[cite: 1]。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 頁面 6: GitHub 部署教學與總結 -->
+        <section class="slide flex-col max-w-4xl mx-auto w-full space-y-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-cyan-400 border-b border-slate-700 pb-2">🚀 如何將這份簡報發布至 GitHub Pages？</h2>
+            
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 text-sm text-slate-300">
+                <ol class="list-decimal list-inside space-y-3">
+                    <li>
+                        <strong class="text-white">建立 GitHub 儲存庫：</strong><br>
+                        登入 GitHub，點選 <span class="text-cyan-300">New Repository</span>，將名稱命名為 <code class="text-amber-300">c-cpp-lecture</code> (或任意名稱)[cite: 1]。
+                    </li>
+                    <li>
+                        <strong class="text-white">上傳 HTML 檔案：</strong><br>
+                        將本頁面的程式碼儲存為 <code class="text-amber-300">index.html</code>，並上傳 (Push/Upload) 到該 Repository 的主分支（<code class="text-cyan-300">main</code>）[cite: 1]。
+                    </li>
+                    <li>
+                        <strong class="text-white">啟用 GitHub Pages：</strong><br>
+                        進入專案頁面 &rarr; <span class="text-cyan-300">Settings</span> &rarr; <span class="text-cyan-300">Pages</span> &rarr; 在 Source 選擇 <code class="text-amber-300">Deploy from a branch</code>，Branch 選擇 <code class="text-cyan-300">main</code> / <code class="text-cyan-300">/(root)</code> 並存檔[cite: 1]。
+                    </li>
+                    <li>
+                        <strong class="text-white">取得網頁網址：</strong><br>
+                        約等待 1~2 分鐘後，即可透過 <code class="text-cyan-400">https://&lt;your-username&gt;.github.io/c-cpp-lecture/</code> 開啟並呈現給學生互動使用！
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 底部控制列 -->
+    <footer class="bg-slate-800 border-t border-slate-700 px-6 py-4 flex justify-between items-center z-10">
+        <button id="prev-btn" onclick="changeSlide(-1)" class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-2 rounded-lg text-sm transition font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <i class="fa-solid fa-arrow-left"></i> 上一張 (←)
+        </button>
+        <div class="text-xs text-slate-400 hidden md:block">
+            提示：可直接使用鍵盤方向鍵 <kbd class="px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-slate-300">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-slate-300">→</kbd> 進行切換
+        </div>
+        <button id="next-btn" onclick="changeSlide(1)" class="bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-2 rounded-lg text-sm transition font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            下一張 (→) <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </footer>
+
+    <!-- JavaScript 控制邏輯 -->
+    <script>
+        // 初始化 Mermaid (流程圖)
+        mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').innerText = totalSlides;
+
+        function updateSlides() {
+            slides.forEach((slide, index) => {
+                if(index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            document.getElementById('current-slide').innerText = currentSlide + 1;
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+            if (currentSlide < 0) currentSlide = 0;
+            if (currentSlide >= totalSlides) currentSlide = totalSlides - 1;
+            updateSlides();
+        }
+
+        // 鍵盤切換控制
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Space') {
+                if(currentSlide < totalSlides - 1) changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                if(currentSlide > 0) changeSlide(-1);
+            }
+        });
+
+        // 控制流程圖開關 (按了才顯示)
+        function toggleFlowchart(id) {
+            const el = document.getElementById(id);
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        }
+
+        // 控制答案顯示
+        function toggleAnswer(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+
+        // 頁面1：互動想法
+        function addIdea() {
+            const input = document.getElementById('thinking-input');
+            const val = input.value.trim();
+            if(val) {
+                const li = document.createElement('li');
+                li.innerText = val;
+                document.getElementById('idea-list').appendChild(li);
+                input.value = '';
+            }
+        }
+
+        // 頁面4：即時計算薪資範例
+        function calculateSalary() {
+            const hours = parseFloat(document.getElementById('work-hours').value);
+            const resultEl = document.getElementById('salary-result');
+            const BASE_RATE = 75.0;
+
+            if (isNaN(hours) || hours < 0) {
+                resultEl.innerHTML = '<span class="text-rose-400">請輸入有效的時數！</span>';
+                return;
+            }
+
+            let salary = 0.0;
+            let detail = '';
+
+            if (hours <= 60) {
+                salary = hours * BASE_RATE;
+                detail = `${hours} 小時 × 75 元`;
+            } else if (hours <= 75) {
+                salary = (60 * BASE_RATE) + ((hours - 60) * BASE_RATE * 1.25);
+                detail = `(60 × 75) + (${hours - 60} × 75 × 1.25)`;
+            } else {
+                salary = (60 * BASE_RATE) + (15 * BASE_RATE * 1.25) + ((hours - 75) * BASE_RATE * 1.75);
+                detail = `(60 × 75) + (15 × 75 × 1.25) + (${hours - 75} × 75 × 1.75)`;
+            }
+
+            resultEl.innerHTML = `<div>時數：<strong>${hours}</strong> 小時<br>計算式：${detail}<br>應領薪資：<strong class="text-lg text-emerald-400">${salary}</strong> 元</div>`;
+        }
+
+        // 初始化
+        updateSlides();
+    </script>
+</body>
+</html>
