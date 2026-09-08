@@ -3,443 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4-2 選擇結構 (if...else if...else & 巢狀 if)</title>
+    <title>C++ 選擇結構逐行互動教學</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
+    <!-- FontAwesome 圖示庫 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Mermaid.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
     <style>
-        .slide { display: none; }
-        .slide.active { display: flex; }
-        pre code { font-family: 'Fira Code', 'Courier New', Courier, monospace; }
-        
-        /* 程式碼行點擊效果 */
+        .code-container {
+            font-family: 'Consolas', 'Fira Code', 'Courier New', monospace;
+            background-color: #ffffff;
+            color: #000000;
+        }
         .code-line {
             display: flex;
-            padding: 2px 6px;
-            border-radius: 4px;
+            align-items: center;
+            padding: 1px 8px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            user-select: none;
+            line-height: 1.5;
+            font-size: 0.9rem;
         }
         .code-line:hover {
-            background-color: rgba(56, 189, 248, 0.15);
+            background-color: #e8f4fe;
         }
         .code-line.selected {
-            background-color: rgba(56, 189, 248, 0.25);
-            border-left: 3px solid #38bdf8;
+            background-color: #cce5ff;
+            border-left: 4px solid #0066cc;
         }
         .line-num {
-            width: 2.2rem;
-            color: #64748b;
+            width: 2.5rem;
+            color: #7a7a7a;
             text-align: right;
-            padding-right: 0.75rem;
-            user-select: none;
-            font-size: 0.75rem;
+            padding-right: 1rem;
+            font-size: 0.85rem;
         }
+        /* C++ 語法高亮 (Dev-C++ / Visual Studio 風格) */
+        .keyword { color: #0000ff; font-weight: bold; }       /* int, char, if, else, return */
+        .directive { color: #008000; font-weight: bold; }     /* #include */
+        .string { color: #0000ff; }                          /* "字串" */
+        .character { color: #0000ff; }                       /* 'y', 'Y' */
+        .comment { color: #0080ff; font-style: italic; }     /* // 註解 */
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans h-screen flex flex-col justify-between overflow-hidden select-none">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between p-4 md:p-8">
 
-    <!-- 頂部導覽列 -->
-    <header class="bg-slate-800 border-b border-slate-700 px-6 py-3 flex justify-between items-center z-10">
-        <h1 class="text-xl font-bold text-cyan-400 flex items-center gap-2">
-            <i class="fa-solid fa-code"></i> 選擇結構 4-2 講義簡報
-        </h1>
-        <div class="text-sm text-slate-400">
-            <span id="current-slide">1</span> / <span id="total-slides">5</span>
+    <!-- 頂部標題與範例切換按鈕 -->
+    <header class="max-w-6xl w-full mx-auto mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-700 pb-4">
+        <div>
+            <h1 class="text-2xl font-bold text-cyan-400 flex items-center gap-2">
+                <i class="fa-solid fa-code"></i> C++ 選擇結構逐行互動教學
+            </h1>
+            <p class="text-sm text-slate-400 mt-1">點擊左側程式碼的任意行數，即可查看該行的詳細語法與邏輯說明。</p>
+        </div>
+        
+        <!-- 切換頁籤按鈕 -->
+        <div class="flex bg-slate-800 p-1 rounded-lg border border-slate-700">
+            <button id="tab-btn-1" onclick="switchExample(1)" class="px-4 py-2 text-sm font-semibold rounded-md transition-all bg-cyan-600 text-white shadow">
+                範例一：成績等級 (多重 if)
+            </button>
+            <button id="tab-btn-2" onclick="switchExample(2)" class="px-4 py-2 text-sm font-semibold rounded-md transition-all text-slate-400 hover:text-white">
+                範例二：票價計算 (巢狀 if)
+            </button>
         </div>
     </header>
 
-    <!-- 簡報主體區域 -->
-    <main class="flex-1 relative overflow-y-auto p-6 md:p-12 flex items-center justify-center">
-
-        <!-- 頁面 1: 首頁與觀念介紹 -->
-        <section class="slide active flex-col items-center justify-center text-center max-w-4xl mx-auto space-y-6">
-            <span class="bg-cyan-500/20 text-cyan-300 px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide border border-cyan-500/30">C++ 程式設計基礎</span>
-            <h2 class="text-4xl md:text-5xl font-extrabold text-white leading-tight">4-2 多重選擇與巢狀結構</h2>
-            <p class="text-slate-300 text-lg max-w-2xl leading-relaxed">
-                現實生活中的決策往往不只「是與否」。本單元帶你掌握 <code class="text-amber-400 font-mono">if...else if...else</code> 與 <code class="text-amber-400 font-mono">巢狀 if</code>，處理更複雜的多條件判斷！
-            </p>
-            <div class="bg-slate-800/80 p-6 rounded-xl border border-slate-700 text-left w-full shadow-xl">
-                <h3 class="text-cyan-400 font-bold mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-lightbulb"></i> 互動思考：生活中的情境
-                </h3>
-                <p class="text-slate-300 text-sm mb-4">
-                    冷氣溫控：>30°C開冷氣、&lt;18°C開暖氣，其餘送風。你還能想到哪些多條件的生活例子？
-                </p>
-                <div class="flex gap-2">
-                    <input type="text" id="thinking-input" placeholder="例如：紅綠燈號誌判斷、購物折扣卡別..." class="bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm flex-1 focus:outline-none focus:border-cyan-400">
-                    <button onclick="addIdea()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded text-sm transition">分享想法</button>
-                </div>
-                <ul id="idea-list" class="mt-3 text-sm text-cyan-200 list-disc list-inside space-y-1"></ul>
+    <!-- 主要內容區 -->
+    <main class="max-w-6xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 items-start flex-1">
+        
+        <!-- 左側：程式碼呈現區塊 (佔 7 欄) -->
+        <div class="lg:col-span-7 bg-white text-slate-900 rounded-xl shadow-2xl overflow-hidden border border-slate-300">
+            <div class="bg-slate-100 px-4 py-2 border-b border-slate-300 flex justify-between items-center text-xs text-slate-600 font-mono">
+                <span id="file-name"><i class="fa-regular fa-file-code text-blue-600"></i> main_score.cpp</span>
+                <span>C++11</span>
             </div>
-        </section>
-
-        <!-- 頁面 2: if...else if...else 成績等級範例程式碼 -->
-        <section class="slide flex-col max-w-6xl mx-auto w-full space-y-4">
-            <h2 class="text-2xl font-bold text-cyan-400 border-b border-slate-700 pb-2">1. if...else if...else 範例：成績等級判斷</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 互動程式碼區塊 -->
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-sm font-bold text-amber-400"><i class="fa-solid fa-code"></i> C++ 範例程式碼 (點擊行號觀看說明)</h3>
-                    </div>
-                    <div class="bg-slate-900 p-2 rounded text-xs font-mono text-emerald-300 border border-slate-700 max-h-[380px] overflow-y-auto">
-                        <div class="code-line" onclick="explainLine('score', 1, this)"><span class="line-num">1</span><span>#include &lt;iostream&gt;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 2, this)"><span class="line-num">2</span><span>using namespace std;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 3, this)"><span class="line-num">3</span><span></span></div>
-                        <div class="code-line" onclick="explainLine('score', 4, this)"><span class="line-num">4</span><span>int main() {</span></div>
-                        <div class="code-line" onclick="explainLine('score', 5, this)"><span class="line-num">5</span><span class="pl-4">int score;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 6, this)"><span class="line-num">6</span><span class="pl-4">cout &lt;&lt; "請輸入分數 (0-100) : ";</span></div>
-                        <div class="code-line" onclick="explainLine('score', 7, this)"><span class="line-num">7</span><span class="pl-4">cin &gt;&gt; score;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 8, this)"><span class="line-num">8</span><span class="pl-4"></span></div>
-                        <div class="code-line" onclick="explainLine('score', 9, this)"><span class="line-num">9</span><span class="pl-4 text-slate-500">// 檢查輸入是否合理</span></div>
-                        <div class="code-line" onclick="explainLine('score', 10, this)"><span class="line-num">10</span><span class="pl-4">if (score &lt; 0 || score &gt; 100) {</span></div>
-                        <div class="code-line" onclick="explainLine('score', 11, this)"><span class="line-num">11</span><span class="pl-8">cout &lt;&lt; "輸入錯誤！分數必須在 0 到 100 之間。" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 12, this)"><span class="line-num">12</span><span class="pl-4">}</span></div>
-                        <div class="code-line" onclick="explainLine('score', 13, this)"><span class="line-num">13</span><span class="pl-4 text-slate-500">// 由大到小依序判斷</span></div>
-                        <div class="code-line" onclick="explainLine('score', 14, this)"><span class="line-num">14</span><span class="pl-4">else if (score &gt;= 90) {</span></div>
-                        <div class="code-line" onclick="explainLine('score', 15, this)"><span class="line-num">15</span><span class="pl-8">cout &lt;&lt; "等級：A (表現優異)" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 16, this)"><span class="line-num">16</span><span class="pl-4">}</span></div>
-                        <div class="code-line" onclick="explainLine('score', 17, this)"><span class="line-num">17</span><span class="pl-4">else if (score &gt;= 80) {</span></div>
-                        <div class="code-line" onclick="explainLine('score', 18, this)"><span class="line-num">18</span><span class="pl-8">cout &lt;&lt; "等級：B (表現良好)" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 19, this)"><span class="line-num">19</span><span class="pl-4">}</span></div>
-                        <div class="code-line" onclick="explainLine('score', 20, this)"><span class="line-num">20</span><span class="pl-4">else if (score &gt;= 70) {</span></div>
-                        <div class="code-line" onclick="explainLine('score', 21, this)"><span class="line-num">21</span><span class="pl-8">cout &lt;&lt; "等級：C (表現尚可)" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 22, this)"><span class="line-num">22</span><span class="pl-4">}</span></div>
-                        <div class="code-line" onclick="explainLine('score', 23, this)"><span class="line-num">23</span><span class="pl-4">else if (score &gt;= 60) {</span></div>
-                        <div class="code-line" onclick="explainLine('score', 24, this)"><span class="line-num">24</span><span class="pl-8">cout &lt;&lt; "等級：D (及格)" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 25, this)"><span class="line-num">25</span><span class="pl-4">}</span></div>
-                        <div class="code-line" onclick="explainLine('score', 26, this)"><span class="line-num">26</span><span class="pl-4">else {</span></div>
-                        <div class="code-line" onclick="explainLine('score', 27, this)"><span class="line-num">27</span><span class="pl-8">cout &lt;&lt; "等級：F (不及格)" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 28, this)"><span class="line-num">28</span><span class="pl-4">}</span></div>
-                        <div class="code-line" onclick="explainLine('score', 29, this)"><span class="line-num">29</span><span class="pl-4">return 0;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 30, this)"><span class="line-num">30</span><span>}</span></div>
-                    </div>
-
-                    <!-- 即時解說區 -->
-                    <div id="score-explain" class="bg-slate-900/90 p-3 rounded-lg border border-cyan-500/30 text-xs text-cyan-200 min-h-[75px] flex items-center">
-                        💡 提示：點擊上方程式碼任一行，即可看見講解！
-                    </div>
-                </div>
-
-                <!-- 流程圖與重點摘要 -->
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-md font-bold text-cyan-300 mb-2"><i class="fa-solid fa-sitemap"></i> 邏輯重點與流程圖</h3>
-                        <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside mb-4">
-                            <li><strong>順序檢查：</strong> 程式由上往下測試，符合條件即執行。</li>
-                            <li><strong>命中即跳出：</strong> 執行完完畢後跳過後續區塊。</li>
-                            <li><strong>預設備用：</strong> 若條件都不符合，由 <code class="text-amber-300">else</code> 處理。</li>
-                        </ul>
-                    </div>
-
-                    <button onclick="toggleFlowchart('flowchart-1')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-medium py-2 rounded-lg transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-eye"></i> 顯示/隱藏 流程圖
-                    </button>
-
-                    <div id="flowchart-1" class="hidden mt-3 w-full bg-slate-900 p-3 rounded-lg border border-slate-700 overflow-x-auto text-left">
-                        <div class="mermaid">
-                        graph TD
-                            Start([開始]) --> Check{分數合法?}
-                            Check -- 否 --> Err[輸出: 輸入錯誤]
-                            Check -- 是 --> C1{score >= 90}
-                            C1 -- 是 --> A[等級 A]
-                            C1 -- 否 --> C2{score >= 80}
-                            C2 -- 是 --> B[等級 B]
-                            C2 -- 否 --> C3{score >= 70}
-                            C3 -- 是 --> C[等級 C]
-                            C3 -- 否 --> C4{score >= 60}
-                            C4 -- 是 --> D[等級 D]
-                            C4 -- 否 --> F[等級 F]
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 頁面 3: 巢狀 if 門票票價範例程式碼 -->
-        <section class="slide flex-col max-w-6xl mx-auto w-full space-y-4">
-            <h2 class="text-2xl font-bold text-cyan-400 border-b border-slate-700 pb-2">2. 巢狀 if (Nested if) 範例：門票票價計算</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 互動程式碼區塊 -->
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3">
-                    <h3 class="text-sm font-bold text-amber-400"><i class="fa-solid fa-layer-group"></i> C++ 範例程式碼 (點擊行號觀看說明)</h3>
-                    <div class="bg-slate-900 p-2 rounded text-xs font-mono text-emerald-300 border border-slate-700 max-h-[380px] overflow-y-auto">
-                        <div class="code-line" onclick="explainLine('ticket', 1, this)"><span class="line-num">1</span><span>#include &lt;iostream&gt;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 2, this)"><span class="line-num">2</span><span>using namespace std;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 3, this)"><span class="line-num">3</span><span></span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 4, this)"><span class="line-num">4</span><span>int main() {</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 5, this)"><span class="line-num">5</span><span class="pl-4">int age;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 6, this)"><span class="line-num">6</span><span class="pl-4">char hasStudentCard;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 7, this)"><span class="line-num">7</span><span class="pl-4"></span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 8, this)"><span class="line-num">8</span><span class="pl-4">cout &lt;&lt; "請輸入您的年齡: ";</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 9, this)"><span class="line-num">9</span><span class="pl-4">cin &gt;&gt; age;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 10, this)"><span class="line-num">10</span><span class="pl-4"></span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 11, this)"><span class="line-num">11</span><span class="pl-4 text-slate-500">// 第一層 if：先判斷年齡是否符合基本票價條件</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 12, this)"><span class="line-num">12</span><span class="pl-4">if (age &gt;= 12 &amp;&amp; age &lt; 65) {</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 13, this)"><span class="line-num">13</span><span class="pl-8">cout &lt;&lt; "請問是否有學生證? (y/n): ";</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 14, this)"><span class="line-num">14</span><span class="pl-8">cin &gt;&gt; hasStudentCard;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 15, this)"><span class="line-num">15</span><span class="pl-8"></span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 16, this)"><span class="line-num">16</span><span class="pl-8 text-slate-500">// 第二層 if (巢状)：根據是否有學生證給予折扣</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 17, this)"><span class="line-num">17</span><span class="pl-8">if (hasStudentCard == 'y' || hasStudentCard == 'Y') {</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 18, this)"><span class="line-num">18</span><span class="pl-12">cout &lt;&lt; "符合學生優惠！門票價格為：150 元" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 19, this)"><span class="line-num">19</span><span class="pl-8">} else {</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 20, this)"><span class="line-num">20</span><span class="pl-12">cout &lt;&lt; "一般成人票，門票價格為：250 元" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 21, this)"><span class="line-num">21</span><span class="pl-8">}</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 22, this)"><span class="line-num">22</span><span class="pl-4">} else {</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 23, this)"><span class="line-num">23</span><span class="pl-8 text-slate-500">// 未滿 12 歲或 65 歲 (含) 以上特惠</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 24, this)"><span class="line-num">24</span><span class="pl-8">cout &lt;&lt; "符合兒童/敬老特惠！門票價格為：100 元" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 25, this)"><span class="line-num">25</span><span class="pl-4">}</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 26, this)"><span class="line-num">26</span><span class="pl-4">return 0;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 27, this)"><span class="line-num">27</span><span>}</span></div>
-                    </div>
-
-                    <!-- 即時解說區 -->
-                    <div id="ticket-explain" class="bg-slate-900/90 p-3 rounded-lg border border-indigo-500/30 text-xs text-indigo-200 min-h-[75px] flex items-center">
-                        💡 提示：點擊程式碼，拆解「外層與內層」的條件判斷流程。
-                    </div>
-                </div>
-
-                <!-- 流程圖 -->
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-md font-bold text-cyan-300 mb-2"><i class="fa-solid fa-diagram-project"></i> 巢狀判斷流程圖</h3>
-                        <p class="text-xs text-slate-300 mb-4">
-                            先滿足外層條件，才會進入內層判斷。
-                        </p>
-                    </div>
-
-                    <button onclick="toggleFlowchart('flowchart-2')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium py-2 rounded-lg transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-eye"></i> 顯示/隱藏 流程圖
-                    </button>
-
-                    <div id="flowchart-2" class="hidden mt-3 w-full bg-slate-900 p-3 rounded-lg border border-slate-700 overflow-x-auto text-left">
-                        <div class="mermaid">
-                        graph TD
-                            Start([開始]) --> Outer{12 <= age < 65 ?}
-                            Outer -- 否 --> Dis[100元 兒童/敬老特惠]
-                            Outer -- 是 --> Inner{有學生證? y/Y}
-                            Inner -- 是 --> Stu[150元 學生優惠]
-                            Inner -- 否 --> Adult[250元 一般成人票]
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 頁面 4: 互動測驗 1 & 2 -->
-        <section class="slide flex-col max-w-5xl mx-auto w-full space-y-6">
-            <h2 class="text-2xl md:text-3xl font-bold text-cyan-400 border-b border-slate-700 pb-2">動手做練習 (1 & 2)</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-3">
-                    <h3 class="text-base font-bold text-emerald-400"><i class="fa-solid fa-pen"></i> 練習 1：三角形判斷填空</h3>
-                    <button onclick="toggleAnswer('quiz1-ans')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-2 rounded transition">
-                        揭曉答案解析
-                    </button>
-                    <div id="quiz1-ans" class="hidden text-xs text-emerald-300 bg-emerald-950/50 p-3 rounded border border-emerald-800 space-y-1">
-                        <p><strong>答案解析：</strong></p>
-                        <p>A: <code class="text-white">using namespace std;</code></p>
-                        <p>B: <code class="text-white">a &lt;= 0 || b &lt;= 0 || c &lt;= 0</code></p>
-                        <p>C: <code class="text-white">a + b &lt;= c</code></p>
-                        <p>D: <code class="text-white">sum_sq == c_sq</code></p>
-                        <p>E: <code class="text-white">sum_sq &gt; c_sq</code></p>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-3">
-                    <h3 class="text-base font-bold text-amber-400"><i class="fa-solid fa-calculator"></i> 練習 2：時數薪資即時試算</h3>
-                    <div class="flex gap-2">
-                        <input type="number" id="work-hours" placeholder="輸入時數 (如 80)" class="bg-slate-900 border border-slate-600 rounded px-3 py-1.5 text-xs text-white flex-1 focus:outline-none focus:border-amber-400">
-                        <button onclick="calculateSalary()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-3 py-1.5 rounded transition">計算薪資</button>
-                    </div>
-                    <div id="salary-result" class="bg-slate-900 p-3 rounded text-xs font-mono text-amber-300 border border-slate-700 min-h-[60px] flex items-center">
-                        請輸入工作時數進行計算...
-                    </div>
-                </div>
+            <div id="code-board" class="code-container p-2 overflow-x-auto max-h-[600px] overflow-y-auto">
+                <!-- 程式碼內容將由 JavaScript 動態渲染 -->
             </div>
-        </section>
+        </div>
 
-        <!-- 頁面 5: 互動測驗 3 & 4 -->
-        <section class="slide flex-col max-w-5xl mx-auto w-full space-y-6">
-            <h2 class="text-2xl md:text-3xl font-bold text-cyan-400 border-b border-slate-700 pb-2">動手做練習 (3 & 4)</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-3">
-                    <h3 class="text-base font-bold text-rose-400"><i class="fa-solid fa-bug"></i> 練習 3：閏年判斷程式 Code Review (4處錯誤)</h3>
-                    <button onclick="toggleAnswer('quiz3-ans')" class="w-full bg-rose-600 hover:bg-rose-500 text-white text-xs py-2 rounded transition">
-                        顯示錯誤分析與修正
-                    </button>
-                    <div id="quiz3-ans" class="hidden text-xs text-rose-200 bg-rose-950/50 p-3 rounded border border-rose-800 space-y-2">
-                        <p>1. 語法錯：缺少分號 <code class="text-amber-300 font-bold font-mono">;</code></p>
-                        <p>2. 比較運算錯：賦值符號，應改為 <code class="text-amber-300 font-bold font-mono">==</code></p>
-                        <p>3. 順序錯：較嚴格條件放在後面會提前被攔截。</p>
-                        <p>4. 規則錯：4000倍數為平年，400倍數為閏年。</p>
-                    </div>
-                </div>
+        <!-- 右側：逐行解說卡片區塊 (佔 5 欄) -->
+        <div class="lg:col-span-5 bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-xl space-y-4 sticky top-6">
+            <h2 class="text-lg font-bold text-amber-400 flex items-center gap-2 border-b border-slate-700 pb-3">
+                <i class="fa-solid fa-lightbulb"></i> 逐行程式解說
+            </h2>
 
-                <div class="bg-slate-800 p-5 rounded-xl border border-slate-700 space-y-3 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-base font-bold text-sky-400"><i class="fa-solid fa-compass"></i> 練習 4：象限判斷邏輯</h3>
-                        <p class="text-xs text-slate-300 mt-2 leading-relaxed">
-                            先排除原點與兩軸情況，最後順利進入四大象限判斷。
-                        </p>
-                    </div>
-                    <div class="bg-slate-900 p-3 rounded text-xs border border-slate-700 text-slate-400">
-                        <span class="text-cyan-400">💡 教學 Tips:</span> 提醒學生「邏輯與 <code class="text-amber-300">&amp;&amp;</code>」與條件次序關係。
-                    </div>
-                </div>
+            <div id="line-title" class="text-xl font-bold text-cyan-300">
+                請點擊左側程式碼行數
             </div>
-        </section>
+
+            <div id="line-body" class="text-slate-300 text-sm leading-relaxed space-y-2">
+                點擊左方程式碼中的任意行數，此處將同步呈現該行程式碼的詳細功能、語法細節與邏輯觀念！
+            </div>
+
+            <div id="line-tip" class="hidden bg-slate-900/80 p-3 rounded-lg border border-cyan-500/30 text-xs text-cyan-200 mt-4">
+                <!-- 觀念補充小提示 -->
+            </div>
+        </div>
 
     </main>
 
-    <!-- 底部控制列 -->
-    <footer class="bg-slate-800 border-t border-slate-700 px-6 py-4 flex justify-between items-center z-10">
-        <button id="prev-btn" onclick="changeSlide(-1)" class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-2 rounded-lg text-sm transition font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-            <i class="fa-solid fa-arrow-left"></i> 上一張 (←)
-        </button>
-        <div class="text-xs text-slate-400 hidden md:block">
-            提示：可用鍵盤方向鍵 <kbd class="px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-slate-300">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-slate-300">→</kbd> 切換
-        </div>
-        <button id="next-btn" onclick="changeSlide(1)" class="bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-2 rounded-lg text-sm transition font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-            下一張 (→) <i class="fa-solid fa-arrow-right"></i>
-        </button>
+    <!-- 頁尾 -->
+    <footer class="max-w-6xl w-full mx-auto text-center text-xs text-slate-500 mt-8 border-t border-slate-800 pt-4">
+        C++ 程式教學講義互動輔助系統
     </footer>
 
-    <!-- JavaScript 控制邏輯 -->
+    <!-- JavaScript 資料庫與控制邏輯 -->
     <script>
-        mermaid.initialize({ startOnLoad: false, theme: 'dark' });
-
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        const totalSlides = slides.length;
-
-        document.getElementById('total-slides').innerText = totalSlides;
-
-        function updateSlides() {
-            slides.forEach((slide, index) => {
-                if(index === currentSlide) {
-                    slide.classList.add('active');
-                } else {
-                    slide.classList.remove('active');
-                }
-            });
-
-            document.getElementById('current-slide').innerText = currentSlide + 1;
-            document.getElementById('prev-btn').disabled = currentSlide === 0;
-            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
-        }
-
-        function changeSlide(direction) {
-            currentSlide += direction;
-            if (currentSlide < 0) currentSlide = 0;
-            if (currentSlide >= totalSlides) currentSlide = totalSlides - 1;
-            updateSlides();
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === 'Space') {
-                if(currentSlide < totalSlides - 1) changeSlide(1);
-            } else if (e.key === 'ArrowLeft') {
-                if(currentSlide > 0) changeSlide(-1);
-            }
-        });
-
-        function toggleFlowchart(id) {
-            const el = document.getElementById(id);
-            if (el.classList.contains('hidden')) {
-                el.classList.remove('hidden');
-                mermaid.run({
-                    nodes: el.querySelectorAll('.mermaid')
-                });
-            } else {
-                el.classList.add('hidden');
-            }
-        }
-
-        function toggleAnswer(id) {
-            const el = document.getElementById(id);
-            el.classList.toggle('hidden');
-        }
-
-        const lineExplanations = {
-            score: {
-                1: "<strong>第 1 行 [#include &lt;iostream&gt;]：</strong>引進標準輸入輸出函式庫。",
-                2: "<strong>第 2 行 [using namespace std;]：</strong>使用標準命名空間。",
-                5: "<strong>第 5 行 [int score;]：</strong>宣告儲存分數的整數變數 score。",
-                6: "<strong>第 6-7 行 [輸入處理]：</strong>提示並讀取使用者輸入的分數。",
-                10: "<strong>第 10-12 行 [合法性檢查]：</strong>判斷分數是否超出 0 到 100 範圍。",
-                14: "<strong>第 14-16 行 [score &gt;= 90]：</strong>若分數 >= 90，輸出等級 A。",
-                17: "<strong>第 17-19 行 [score &gt;= 80]：</strong>若分數 >= 80，輸出等級 B。",
-                20: "<strong>第 20-22 行 [score &gt;= 70]：</strong>若分數 >= 70，輸出等級 C。",
-                23: "<strong>第 23-25 行 [score &gt;= 60]：</strong>若分數 >= 60，輸出等級 D。",
-                26: "<strong>第 26-28 行 [else]：</strong>低於 60 分，輸出等級 F。"
-            },
-            ticket: {
-                1: "<strong>第 1-6 行：</strong>載入函式庫並宣告變數 age 與 hasStudentCard。",
-                12: "<strong>第 12 行 [外層 if]：</strong>先過濾出 12 至 64 歲一般年齡區間。",
-                17: "<strong>第 17 行 [內層 if]：</strong>判斷是否有學生證 (y/Y)，符合給予 150 元優惠價。",
-                19: "<strong>第 19 行 [內層 else]：</strong>無學生證則為 250 元成人票。",
-                22: "<strong>第 22 行 [外層 else]：</strong>未滿 12 歲或滿 65 歲以上享有 100 元特惠價。"
+        // 範例一：成績等級判斷 (完整 1~31 行)
+        const example1 = {
+            fileName: "main_score.cpp",
+            code: [
+                { num: 1, text: `<span class="directive">#include</span> <span class="string">&lt;iostream&gt;</span>`, indent: 0 },
+                { num: 2, text: `<span class="keyword">using namespace</span> std;`, indent: 0 },
+                { num: 3, text: ``, indent: 0 },
+                { num: 4, text: `<span class="keyword">int</span> main() {`, indent: 0 },
+                { num: 5, text: `<span class="keyword">int</span> score;`, indent: 6 },
+                { num: 6, text: `cout &lt;&lt; <span class="string">"請輸入分數 (0-100) : "</span>;`, indent: 6 },
+                { num: 7, text: `cin &gt;&gt; score;`, indent: 6 },
+                { num: 8, text: ``, indent: 0 },
+                { num: 9, text: `<span class="comment">// 檢查輸入是否合理</span>`, indent: 6 },
+                { num: 10, text: `<span class="keyword">if</span> (score &lt; 0 || score &gt; 100) {`, indent: 6 },
+                { num: 11, text: `cout &lt;&lt; <span class="string">"輸入錯誤！分數必須在 0 到 100 之間。"</span> &lt;&lt; endl;`, indent: 12 },
+                { num: 12, text: `}`, indent: 6 },
+                { num: 13, text: `<span class="comment">// 由大到小依序判斷</span>`, indent: 6 },
+                { num: 14, text: `<span class="keyword">else if</span> (score &gt;= 90) {`, indent: 6 },
+                { num: 15, text: `cout &lt;&lt; <span class="string">"等級：A (表現優異)"</span> &lt;&lt; endl;`, indent: 12 },
+                { num: 16, text: `}`, indent: 6 },
+                { num: 17, text: `<span class="keyword">else if</span> (score &gt;= 80) {`, indent: 6 },
+                { num: 18, text: `cout &lt;&lt; <span class="string">"等級：B (表現良好)"</span> &lt;&lt; endl; <span class="comment">// 隱含條件：score &lt; 90</span>`, indent: 12 },
+                { num: 19, text: `}`, indent: 6 },
+                { num: 20, text: `<span class="keyword">else if</span> (score &gt;= 70) {`, indent: 6 },
+                { num: 21, text: `cout &lt;&lt; <span class="string">"等級：C (表現尚可)"</span> &lt;&lt; endl; <span class="comment">// 隱含條件：score &lt; 80</span>`, indent: 12 },
+                { num: 22, text: `}`, indent: 6 },
+                { num: 23, text: `<span class="keyword">else if</span> (score &gt;= 60) {`, indent: 6 },
+                { num: 24, text: `cout &lt;&lt; <span class="string">"等級：D (及格)"</span> &lt;&lt; endl; <span class="comment">// 隱含條件：score &lt; 70</span>`, indent: 12 },
+                { num: 25, text: `}`, indent: 6 },
+                { num: 26, text: `<span class="keyword">else</span> {`, indent: 6 },
+                { num: 27, text: `cout &lt;&lt; <span class="string">"等級：F (不及格)"</span> &lt;&lt; endl; <span class="comment">// 隱含條件：score &lt; 60</span>`, indent: 12 },
+                { num: 28, text: `}`, indent: 6 },
+                { num: 29, text: ``, indent: 0 },
+                { num: 30, text: `<span class="keyword">return</span> 0;`, indent: 6 },
+                { num: 31, text: `}`, indent: 0 }
+            ],
+            explanations: {
+                1: { title: "第 1 行：引入標頭檔", body: "<code>#include &lt;iostream&gt;</code><br>包含 C++ 標準輸入輸出串流庫，才能使用 <code>cout</code> 與 <code>cin</code>。", tip: "" },
+                2: { title: "第 2 行：使用標準命名空間", body: "<code>using namespace std;</code><br>宣告使用 std 命名空間，免去每次寫 <code>std::</code> 的繁瑣。", tip: "" },
+                3: { title: "第 3 行：空白行", body: "適當排版空行，增進程式碼閱讀性。", tip: "" },
+                4: { title: "第 4 行：主程式入口", body: "<code>int main() {</code><br>所有 C++ 程式執行的起點入口。", tip: "" },
+                5: { title: "第 5 行：變數宣告", body: "<code>int score;</code><br>宣告整數變數 <code>score</code> 用於存放分數。", tip: "" },
+                6: { title: "第 6 行：提示輸出", body: "<code>cout &lt;&lt; \"請輸入分數 (0-100) : \";</code><br>印出輸入提示文字。", tip: "" },
+                7: { title: "第 7 行：接收輸入", body: "<code>cin &gt;&gt; score;</code><br>將使用者鍵盤輸入的值存入 <code>score</code> 變數中。", tip: "" },
+                8: { title: "第 8 行：空白行", body: "排版空行。", tip: "" },
+                9: { title: "第 9 行：單行註解", body: "<code>// 檢查輸入是否合理</code><br>程式說明註解，編譯器會自動忽略不執行。", tip: "" },
+                10: { title: "第 10 行：輸入合法性檢查", body: "<code>if (score &lt; 0 || score &gt; 100) {</code><br>用 <code>||</code> (OR) 判斷分數是否小於 0 或大於 100 (超出合法範圍)。", tip: "💡 防錯設計：優先排斥不合法數據可防止邏輯出錯。" },
+                11: { title: "第 11 行：印出錯誤訊息", body: "<code>cout &lt;&lt; \"輸入錯誤！...\" &lt;&lt; endl;</code><br>當分數不合法時印出警告訊息。", tip: "" },
+                12: { title: "第 12 行：If 區塊結束", body: "<code>}</code><br>結束合法性檢查的條件區塊。", tip: "" },
+                13: { title: "第 13 行：單行註解", body: "<code>// 由大到小依序判斷</code><br>說明接下來將由高分至低分進行多重條件檢查。", tip: "" },
+                14: { title: "第 14 行：條件一 (>= 90)", body: "<code>else if (score &gt;= 90) {</code><br>檢查分數是否達到 90 分以上。", tip: "" },
+                15: { title: "第 15 行：等級 A 輸出", body: "<code>cout &lt;&lt; \"等級：A (表現優異)\" &lt;&lt; endl;</code><br>分數 >= 90 時輸出等級 A 評語。", tip: "💡 命中即跳出：條件成立後即跳出整個 if...else 結構。" },
+                16: { title: "第 16 行：區塊結束", body: "<code>}</code><br>結束等級 A 的條件判斷區塊。", tip: "" },
+                17: { title: "第 17 行：條件二 (>= 80)", body: "<code>else if (score &gt;= 80) {</code><br>檢查分數是否達到 80 分以上。", tip: "" },
+                18: { title: "第 18 行：等級 B 輸出與隱含條件", body: "<code>cout &lt;&lt; \"等級：B (表現良好)\" &lt;&lt; endl;</code><br><b>重點：</b>能執行到這裡代表分數必定小於 90，因此帶有「<b>隱含條件：score &lt; 90</b>」。", tip: "💡 觀念：無需寫成 <code>score &gt;= 80 &amp;&amp; score &lt; 90</code>。" },
+                19: { title: "第 19 行：區塊結束", body: "<code>}</code><br>結束等級 B 的判斷區塊。", tip: "" },
+                20: { title: "第 20 行：條件三 (>= 70)", body: "<code>else if (score &gt;= 70) {</code><br>檢查分數是否達到 70 分以上。", tip: "" },
+                21: { title: "第 21 行：等級 C 輸出與隱含條件", body: "<code>cout &lt;&lt; \"等級：C (表現尚可)\" &lt;&lt; endl;</code><br>輸出等級 C，帶有「<b>隱含條件：score &lt; 80</b>」。", tip: "" },
+                22: { title: "第 22 行：區塊結束", body: "<code>}</code><br>結束等級 C 的判斷區塊。", tip: "" },
+                23: { title: "第 23 行：條件四 (>= 60)", body: "<code>else if (score &gt;= 60) {</code><br>檢查分數是否達及格線 60 分以上。", tip: "" },
+                24: { title: "第 24 行：等級 D 輸出與隱含條件", body: "<code>cout &lt;&lt; \"等級：D (及格)\" &lt;&lt; endl;</code><br>輸出等級 D，帶有「<b>隱含條件：score &lt; 70</b>」。", tip: "" },
+                25: { title: "第 25 行：區塊結束", body: "<code>}</code><br>結束等級 D 的判斷區塊。", tip: "" },
+                26: { title: "第 26 行：預設接管 (Else)", body: "<code>else {</code><br>當前面所有條件 (>=90, 80, 70, 60) 皆不成立時自動進到此處。", tip: "💡 注意：else 後不接任何條件。" },
+                27: { title: "第 27 行：等級 F 輸出與隱含條件", body: "<code>cout &lt;&lt; \"等級：F (不及格)\" &lt;&lt; endl;</code><br>輸出不及格評語，帶有「<b>隱含條件：score &lt; 60</b>」。", tip: "" },
+                28: { title: "第 28 行：Else 區塊結束", body: "<code>}</code><br>結束選擇結構。", tip: "" },
+                29: { title: "第 29 行：空白行", body: "排版空行。", tip: "" },
+                30: { title: "第 30 行：回傳正常結束訊號", body: "<code>return 0;</code><br>回傳 0 代表程式順利正常執行結束。", tip: "" },
+                31: { title: "第 31 行：Main 函式結束", body: "<code>}</code><br>主程式右大括號結束點。", tip: "" }
             }
         };
 
-        function explainLine(type, lineNum, element) {
-            const parent = element.parentElement;
-            parent.querySelectorAll('.code-line').forEach(el => el.classList.remove('selected'));
+        // 範例二：門票價格計算 (巢狀 if, 完整 1~30 行)
+        const example2 = {
+            fileName: "main_ticket.cpp",
+            code: [
+                { num: 1, text: `<span class="directive">#include</span> <span class="string">&lt;iostream&gt;</span>`, indent: 0 },
+                { num: 2, text: `<span class="keyword">using namespace</span> std;`, indent: 0 },
+                { num: 3, text: ``, indent: 0 },
+                { num: 4, text: `<span class="keyword">int</span> main() {`, indent: 0 },
+                { num: 5, text: `<span class="keyword">int</span> age;`, indent: 6 },
+                { num: 6, text: `<span class="keyword">char</span> hasStudentCard;`, indent: 6 },
+                { num: 7, text: ``, indent: 0 },
+                { num: 8, text: `cout &lt;&lt; <span class="string">"請輸入您的年齡: "</span>;`, indent: 6 },
+                { num: 9, text: `cin &gt;&gt; age;`, indent: 6 },
+                { num: 10, text: ``, indent: 0 },
+                { num: 11, text: `<span class="comment">// 第一層 if：先判斷年齡是否符合基本票價條件</span>`, indent: 6 },
+                { num: 12, text: `<span class="keyword">if</span> (age &gt;= 12 &amp;&amp; age &lt; 65) {`, indent: 6 },
+                { num: 13, text: ``, indent: 0 },
+                { num: 14, text: `cout &lt;&lt; <span class="string">"請問是否有學生證? (y/n): "</span>;`, indent: 12 },
+                { num: 15, text: `cin &gt;&gt; hasStudentCard;`, indent: 12 },
+                { num: 16, text: ``, indent: 0 },
+                { num: 17, text: `<span class="comment">// 第二層 if（巢狀）：根據是否有學生證給予不同折扣</span>`, indent: 12 },
+                { num: 18, text: `<span class="keyword">if</span> (hasStudentCard == <span class="character">'y'</span> || hasStudentCard == <span class="character">'Y'</span>) {`, indent: 12 },
+                { num: 19, text: `cout &lt;&lt; <span class="string">"符合學生優惠！門票價格為：150 元"</span> &lt;&lt; endl;`, indent: 16 },
+                { num: 20, text: `} <span class="keyword">else</span> {`, indent: 12 },
+                { num: 21, text: `cout &lt;&lt; <span class="string">"一般成人票，門票價格為：250 元"</span> &lt;&lt; endl;`, indent: 16 },
+                { num: 22, text: `}`, indent: 12 },
+                { num: 23, text: ``, indent: 0 },
+                { num: 24, text: `} <span class="keyword">else</span> {`, indent: 6 },
+                { num: 25, text: `<span class="comment">// 未滿 12 歲或 65 歲（含）以上直接享有特惠票</span>`, indent: 12 },
+                { num: 26, text: `cout &lt;&lt; <span class="string">"符合兒童/敬老特惠！門票價格為：100 元"</span> &lt;&lt; endl;`, indent: 12 },
+                { num: 27, text: `}`, indent: 6 },
+                { num: 28, text: ``, indent: 0 },
+                { num: 29, text: `<span class="keyword">return</span> 0;`, indent: 6 },
+                { num: 30, text: `}`, indent: 0 }
+            ],
+            explanations: {
+                1: { title: "第 1 行：引入標頭檔", body: "<code>#include &lt;iostream&gt;</code><br>包含 C++ 標準輸入輸出庫。", tip: "" },
+                2: { title: "第 2 行：使用標準命名空間", body: "<code>using namespace std;</code><br>簡化 <code>cout</code> 與 <code>cin</code> 的語法寫法。", tip: "" },
+                3: { title: "第 3 行：空白行", body: "程式區塊排版。", tip: "" },
+                4: { title: "第 4 行：主程式入口", body: "<code>int main() {</code><br>程式開始執行處。", tip: "" },
+                5: { title: "第 5 行：宣告整數變數 age", body: "<code>int age;</code><br>用於儲存使用者輸入的年齡數值。", tip: "" },
+                6: { title: "第 6 行：宣告字元變數 hasStudentCard", body: "<code>char hasStudentCard;</code><br>用於儲存是否有學生證的字元回答 ('y' 或 'n')。", tip: "💡 提示：char 只能儲存單一英文字母或符號。" },
+                7: { title: "第 7 行：空白行", body: "排版空行。", tip: "" },
+                8: { title: "第 8 行：提示輸入年齡", body: "<code>cout &lt;&lt; \"請輸入您的年齡: \";</code><br>輸出年齡詢問文字。", tip: "" },
+                9: { title: "第 9 行：讀取年齡", body: "<code>cin &gt;&gt; age;</code><br>接收使用者輸入並存入 <code>age</code> 變數。", tip: "" },
+                10: { title: "第 10 行：空白行", body: "排版空行。", tip: "" },
+                11: { title: "第 11 行：單行註解", body: "<code>// 第一層 if：先判斷年齡是否符合基本票價條件</code><br>提示外層條件判斷點。", tip: "" },
+                12: { title: "第 12 行：第一層 If 判斷 (年齡過濾)", body: "<code>if (age &gt;= 12 &amp;&amp; age &lt; 65) {</code><br>使用 <code>&amp;&amp;</code> (AND) 檢查年齡是否介於 12~64 歲之間。", tip: "💡 雙向限制：需同時滿 12 歲且小於 65 歲才成立。" },
+                13: { title: "第 13 行：空白行", body: "區塊內排版。", tip: "" },
+                14: { title: "第 14 行：詢問學生證", body: "<code>cout &lt;&lt; \"請問是否有學生證? (y/n): \";</code><br>於第一層條件成立後，進一步詢問學生身分。", tip: "" },
+                15: { title: "第 15 行：讀取學生證字元", body: "<code>cin &gt;&gt; hasStudentCard;</code><br>將使用者輸入的字母存入 <code>hasStudentCard</code>。", tip: "" },
+                16: { title: "第 16 行：空白行", body: "區塊內排版。", tip: "" },
+                17: { title: "第 17 行：巢狀結構單行註解", body: "<code>// 第二層 if（巢狀）：根據是否有學生證給予不同折扣</code><br>說明寫在第一層內部的第二次條件判斷。", tip: "💡 巢狀觀念：外層不成立時，內層完全不會被執行！" },
+                18: { title: "第 18 行：第二層 If 判斷 (學生證)", body: "<code>if (hasStudentCard == 'y' || hasStudentCard == 'Y') {</code><br>使用 <code>||</code> (OR) 同時支援小寫 'y' 與大寫 'Y'。", tip: "💡 容錯設計：允許使用者輸入大寫字母。" },
+                19: { title: "第 19 行：學生特惠價格輸出", body: "<code>cout &lt;&lt; \"符合學生優惠！門票價格為：150 元\" &lt;&lt; endl;</code><br>印出 150 元門票。", tip: "" },
+                20: { title: "第 20 行：第二層 Else", body: "<code>} else {</code><br>年齡在 12~64 歲，但沒有學生證的情況。", tip: "" },
+                21: { title: "第 21 行：一般成人票價格輸出", body: "<code>cout &lt;&lt; \"一般成人票，門票價格為：250 元\" &lt;&lt; endl;</code><br>印出成人票價 250 元。", tip: "" },
+                22: { title: "第 22 行：第二層 If/Else 結束", body: "<code>}</code><br>結束內層選擇結構。", tip: "" },
+                23: { title: "第 23 行：空白行", body: "區塊內排版。", tip: "" },
+                24: { title: "第 24 行：第一層 Else", body: "<code>} else {</code><br>年齡<b>不滿足</b> 12~64 歲時進入此處。", tip: "💡 隱含條件：代表未滿 12 歲或達到 65 歲以上。" },
+                25: { title: "第 25 行：單行註解", body: "<code>// 未滿 12 歲或 65 歲（含）以上直接享有特惠票</code><br>說明特惠票適用對象。", tip: "" },
+                26: { title: "第 26 行：兒童/敬老特惠價格輸出", body: "<code>cout &lt;&lt; \"符合兒童/敬老特惠！門票價格為：100 元\" &lt;&lt; endl;</code><br>印出 100 元特惠票價。", tip: "" },
+                27: { title: "第 27 行：第一層 If/Else 結束", body: "<code>}</code><br>結束外層選擇結構。", tip: "" },
+                28: { title: "第 28 行：空白行", body: "排版空行。", tip: "" },
+                29: { title: "第 29 行：回傳正常結束訊號", body: "<code>return 0;</code><br>程式正常執行完成。", tip: "" },
+                30: { title: "第 30 行：Main 函式結束", body: "<code>}</code><br>主程式右大括號結束點。", tip: "" }
+            }
+        };
+
+        let currentExample = example1;
+
+        // 渲染程式碼面板
+        function renderCode() {
+            const board = document.getElementById('code-board');
+            document.getElementById('file-name').innerHTML = `<i class="fa-regular fa-file-code text-blue-600"></i> ${currentExample.fileName}`;
+            
+            let html = '';
+            currentExample.code.forEach(item => {
+                const indentClass = item.indent > 0 ? `pl-${item.indent}` : '';
+                html += `
+                    <div class="code-line" onclick="explainLine(${item.num}, this)">
+                        <span class="line-num">${item.num}</span>
+                        <span class="${indentClass}">${item.text}</span>
+                    </div>
+                `;
+            });
+            board.innerHTML = html;
+
+            // 預設重置說明卡片
+            document.getElementById('line-title').innerText = "請點擊左側程式碼行數";
+            document.getElementById('line-body').innerText = "點擊左方程式碼中的任意行數，此處將同步呈現該行程式碼的詳細功能、語法細節與邏輯觀念！";
+            document.getElementById('line-tip').classList.add('hidden');
+        }
+
+        // 逐行解說點擊事件
+        function explainLine(lineNum, element) {
+            document.querySelectorAll('.code-line').forEach(el => el.classList.remove('selected'));
             element.classList.add('selected');
 
-            const displayEl = document.getElementById(`${type}-explain`);
-            if (lineExplanations[type] && lineExplanations[type][lineNum]) {
-                displayEl.innerHTML = lineExplanations[type][lineNum];
+            const data = currentExample.explanations[lineNum];
+            const titleEl = document.getElementById('line-title');
+            const bodyEl = document.getElementById('line-body');
+            const tipEl = document.getElementById('line-tip');
+
+            if (data) {
+                titleEl.innerHTML = data.title;
+                bodyEl.innerHTML = data.body;
+                if (data.tip) {
+                    tipEl.innerHTML = data.tip;
+                    tipEl.classList.remove('hidden');
+                } else {
+                    tipEl.classList.add('hidden');
+                }
+            }
+        }
+
+        // 切換範例頁籤
+        function switchExample(id) {
+            const btn1 = document.getElementById('tab-btn-1');
+            const btn2 = document.getElementById('tab-btn-2');
+
+            if (id === 1) {
+                currentExample = example1;
+                btn1.className = "px-4 py-2 text-sm font-semibold rounded-md transition-all bg-cyan-600 text-white shadow";
+                btn2.className = "px-4 py-2 text-sm font-semibold rounded-md transition-all text-slate-400 hover:text-white";
             } else {
-                displayEl.innerHTML = `<strong>第 ${lineNum} 行：</strong>結構或宣告區塊。`;
+                currentExample = example2;
+                btn2.className = "px-4 py-2 text-sm font-semibold rounded-md transition-all bg-cyan-600 text-white shadow";
+                btn1.className = "px-4 py-2 text-sm font-semibold rounded-md transition-all text-slate-400 hover:text-white";
             }
+            renderCode();
         }
 
-        function addIdea() {
-            const input = document.getElementById('thinking-input');
-            const val = input.value.trim();
-            if(val) {
-                const li = document.createElement('li');
-                li.innerText = val;
-                document.getElementById('idea-list').appendChild(li);
-                input.value = '';
-            }
-        }
-
-        function calculateSalary() {
-            const hours = parseFloat(document.getElementById('work-hours').value);
-            const resultEl = document.getElementById('salary-result');
-            const BASE_RATE = 75.0;
-
-            if (isNaN(hours) || hours < 0) {
-                resultEl.innerHTML = '<span class="text-rose-400">請輸入有效的時數！</span>';
-                return;
-            }
-
-            let salary = 0.0;
-            let detail = '';
-
-            if (hours <= 60) {
-                salary = hours * BASE_RATE;
-                detail = `${hours} 小時 × 75 元`;
-            } else if (hours <= 75) {
-                salary = (60 * BASE_RATE) + ((hours - 60) * BASE_RATE * 1.25);
-                detail = `(60 × 75) + (${hours - 60} × 75 × 1.25)`;
-            } else {
-                salary = (60 * BASE_RATE) + (15 * BASE_RATE * 1.25) + ((hours - 75) * BASE_RATE * 1.75);
-                detail = `(60 × 75) + (15 × 75 × 1.25) + (${hours - 75} × 75 × 1.75)`;
-            }
-
-            resultEl.innerHTML = `<div>時數：<strong>${hours}</strong> 小時<br>計算式：${detail}<br>應領薪資：<strong class="text-lg text-emerald-400">${salary}</strong> 元</div>`;
-        }
-
-        updateSlides();
+        // 初始化
+        renderCode();
     </script>
 </body>
 </html>
