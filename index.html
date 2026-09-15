@@ -1,539 +1,533 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4-2 選擇結構 (if...else if...else & 巢狀 if) 完整簡報</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Mermaid.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+    <title>選擇結構 4-2：if...else if...else 與巢狀 if 介紹</title>
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/dracula.min.css">
+    <!-- Code Highlight Theme -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/monokai.min.css">
+    
     <style>
-        .slide { display: none; }
-        .slide.active { display: flex; }
-        pre code { font-family: 'Fira Code', 'Courier New', Courier, monospace; }
+        .reveal h1 { font-size: 2.2em; text-transform: none; font-family: "Microsoft JhengHei", sans-serif; }
+        .reveal h2 { font-size: 1.8em; text-transform: none; font-family: "Microsoft JhengHei", sans-serif; }
+        .reveal h3 { font-size: 1.3em; text-transform: none; font-family: "Microsoft JhengHei", sans-serif; margin-bottom: 10px; }
+        .reveal h4 { font-size: 1.1em; text-transform: none; font-family: "Microsoft JhengHei", sans-serif; }
+        .reveal p, .reveal li { font-size: 0.72em; line-height: 1.4; }
         
-        .code-line {
-            display: flex;
-            padding: 2px 6px;
-            border-radius: 4px;
+        .highlight-box { 
+            background: rgba(255,255,255,0.08); 
+            padding: 8px 12px; 
+            border-radius: 8px; 
+            margin-bottom: 8px; 
+        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
+        
+        .interactive-btn {
+            background-color: #ff79c6;
+            color: #282a36;
+            border: none;
+            padding: 6px 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+            border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            margin-top: 4px;
+            transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
-        .code-line:hover {
-            background-color: rgba(56, 189, 248, 0.15);
+        .interactive-btn:hover { background-color: #ffb86c; transform: translateY(-2px); }
+        .blue-btn { background-color: #8be9fd; }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
-        .code-line.selected {
-            background-color: rgba(56, 189, 248, 0.25);
-            border-left: 3px solid #38bdf8;
+        .modal-content {
+            background: #282a36;
+            border: 2px solid #bd93f9;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 90vw;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
         }
-        .line-num {
-            width: 2.2rem;
-            color: #64748b;
-            text-align: right;
-            padding-right: 0.75rem;
-            user-select: none;
-            font-size: 0.75rem;
+        .close-btn {
+            position: absolute;
+            top: 10px; right: 15px;
+            background: #ff5555;
+            color: white;
+            border: none;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 32px; height: 32px;
+            cursor: pointer;
+        }
+
+        .answer-box {
+            display: none;
+            margin-top: 8px;
+            background: rgba(80, 250, 123, 0.15);
+            border-left: 4px solid #50fa7b;
+            padding: 8px 10px;
+            border-radius: 4px;
+            text-align: left;
+            font-size: 0.75em;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        code { font-family: "Fira Code", Consolas, monospace !important; }
+
+        svg text { font-family: "Microsoft JhengHei", sans-serif; fill: #f8f8f2; font-size: 13px; text-anchor: middle; dominant-baseline: middle; }
+        .node-rect { fill: #44475a; stroke: #bd93f9; stroke-width: 2; rx: 6px; }
+        .node-diamond { fill: #6272a4; stroke: #ff79c6; stroke-width: 2; }
+        .node-start { fill: #50fa7b; stroke: #50fa7b; stroke-width: 2; }
+        .node-start-text { fill: #282a36; font-weight: bold; }
+        .line { stroke: #f8f8f2; stroke-width: 2; marker-end: url(#arrow); }
+        .line-text { fill: #ffb86c; font-size: 11px; }
+
+        .code-explain-line {
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: background 0.2s;
+            cursor: pointer;
+            line-height: 1.15;
+            white-space: nowrap;
+        }
+        .code-explain-line:hover {
+            background: rgba(255, 121, 198, 0.25);
+            border-left: 4px solid #ff79c6;
+        }
+        .explanation-card {
+            background: #44475a;
+            border: 1px solid #bd93f9;
+            border-radius: 8px;
+            padding: 10px;
+            height: 100%;
+            box-sizing: border-box;
+            font-size: 0.8em;
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        table.custom-table {
+            width: 100%;
+            font-size: 0.65em;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+        table.custom-table th, table.custom-table td {
+            border: 1px solid #6272a4;
+            padding: 5px;
+            text-align: center;
+        }
+        table.custom-table th {
+            background: rgba(189, 147, 249, 0.2);
+            color: #ff79c6;
         }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans h-screen flex flex-col justify-between overflow-hidden select-none">
+<body>
+    <svg style="display:none;">
+        <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#f8f8f2"/>
+            </marker>
+        </defs>
+    </svg>
 
-    <!-- 頂部導覽列 -->
-    <header class="bg-slate-800 border-b border-slate-700 px-6 py-3 flex justify-between items-center z-10">
-        <h1 class="text-xl font-bold text-cyan-400 flex items-center gap-2">
-            <i class="fa-solid fa-code"></i> 選擇 structures 4-2 講義簡報 (完整版)
-        </h1>
-        <div class="text-sm text-slate-400">
-            <span id="current-slide">1</span> / <span id="total-slides">6</span>
-        </div>
-    </header>
+    <div class="reveal">
+        <div class="slides">
 
-    <!-- 簡報主體區域 -->
-    <main class="flex-1 relative overflow-y-auto p-6 md:p-12 flex items-center justify-center">
+            <!-- Slide 1: 標題頁 -->
+            <section>
+                <h2>選擇結構 4-2</h2>
+                <h1>if...else if...else 與巢狀 if 介紹</h1>
+                <p style="color: #bd93f9;">處理多元條件與複雜邏輯分流的進階技巧[cite: 2]</p>
+            </section>
 
-        <!-- Slide 1: 封面與觀念導引 -->
-        <section class="slide active flex-col items-center justify-center text-center max-w-4xl mx-auto space-y-6">
-            <span class="bg-cyan-500/20 text-cyan-300 px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide border border-cyan-500/30">C++ 程式設計基礎</span>
-            <h2 class="text-4xl md:text-5xl font-extrabold text-white leading-tight">4-2 多重選擇與巢狀結構</h2>
-            <p class="text-slate-300 text-lg max-w-2xl leading-relaxed">
-                現實生活中的決策往往不只「是與否」。本單元帶你掌握 <code class="text-amber-400 font-mono">if...else if...else</code> 與 <code class="text-amber-400 font-mono">巢狀 if</code>，處理更複雜的多條件判斷！
-            </p>
-            <div class="bg-slate-800/80 p-6 rounded-xl border border-slate-700 text-left w-full shadow-xl">
-                <h3 class="text-cyan-400 font-bold mb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-lightbulb"></i> 互動思考：生活中的情境
-                </h3>
-                <p class="text-slate-300 text-sm mb-4">
-                    冷氣溫控：>30°C開冷氣、&lt;18°C開暖氣，其餘送風。你還能想到哪些多條件的生活例子？
-                </p>
-                <div class="flex gap-2">
-                    <input type="text" id="thinking-input" placeholder="例如：紅綠燈號誌判斷、購物折扣卡別..." class="bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm flex-1 focus:outline-none focus:border-cyan-400">
-                    <button onclick="addIdea()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded text-sm transition">分享想法</button>
+            <!-- Slide 2: 為什麼需要 if...else if...else -->
+            <section>
+                <h3>多元條件：為什麼需要 if...else if...else？[cite: 2]</h3>
+                <div class="highlight-box" style="text-align: left;">
+                    <p>💡 <b>回顧：</b>前面學過用 <code>if...else</code> 處理「二分法」選擇（如：及格與不及格）[cite: 2]。</p>
                 </div>
-                <ul id="idea-list" class="mt-3 text-sm text-cyan-200 list-disc list-inside space-y-1"></ul>
-            </div>
-        </section>
-
-        <!-- Slide 2: if...else if...else 成績等級範例 -->
-        <section class="slide flex-col max-w-6xl mx-auto w-full space-y-4">
-            <h2 class="text-2xl font-bold text-cyan-400 border-b border-slate-700 pb-2">1. if...else if...else 範例：成績等級判斷</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 程式碼 -->
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-sm font-bold text-amber-400"><i class="fa-solid fa-code"></i> C++ 範例程式碼 (點擊行號觀看說明)</h3>
-                    </div>
-                    <div class="bg-slate-900 p-2 rounded text-xs font-mono text-emerald-300 border border-slate-700 max-h-[380px] overflow-y-auto">
-                        <div class="code-line" onclick="explainLine('score', 1, this)"><span class="line-num">1</span><span>#include &lt;iostream&gt;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 2, this)"><span class="line-num">2</span><span>using namespace std;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 4, this)"><span class="line-num">4</span><span>int main() {</span></div>
-                        <div class="code-line" onclick="explainLine('score', 5, this)"><span class="line-num">5</span><span class="pl-4">int score;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 6, this)"><span class="line-num">6</span><span class="pl-4">cout &lt;&lt; "請輸入分數 (0-100) : ";</span></div>
-                        <div class="code-line" onclick="explainLine('score', 7, this)"><span class="line-num">7</span><span class="pl-4">cin &gt;&gt; score;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 10, this)"><span class="line-num">10</span><span class="pl-4">if (score &lt; 0 || score &gt; 100) {</span></div>
-                        <div class="code-line" onclick="explainLine('score', 11, this)"><span class="line-num">11</span><span class="pl-8">cout &lt;&lt; "輸入錯誤！分數必須在 0 到 100 之間。" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 12, this)"><span class="line-num">12</span><span class="pl-4">}</span></div>
-                        <div class="code-line" onclick="explainLine('score', 14, this)"><span class="line-num">14</span><span class="pl-4">else if (score &gt;= 90) {</span></div>
-                        <div class="code-line" onclick="explainLine('score', 15, this)"><span class="line-num">15</span><span class="pl-8">cout &lt;&lt; "等級：A (表現優異)" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 17, this)"><span class="line-num">17</span><span class="pl-4">} else if (score &gt;= 80) {</span></div>
-                        <div class="code-line" onclick="explainLine('score', 18, this)"><span class="line-num">18</span><span class="pl-8">cout &lt;&lt; "等級：B (表現良好)" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 20, this)"><span class="line-num">20</span><span class="pl-4">} else if (score &gt;= 70) {</span></div>
-                        <div class="code-line" onclick="explainLine('score', 21, this)"><span class="line-num">21</span><span class="pl-8">cout &lt;&lt; "等級：C (表現尚可)" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 23, this)"><span class="line-num">23</span><span class="pl-4">} else if (score &gt;= 60) {</span></div>
-                        <div class="code-line" onclick="explainLine('score', 24, this)"><span class="line-num">24</span><span class="pl-8">cout &lt;&lt; "等級：D (及格)" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 26, this)"><span class="line-num">26</span><span class="pl-4">} else {</span></div>
-                        <div class="code-line" onclick="explainLine('score', 27, this)"><span class="line-num">27</span><span class="pl-8">cout &lt;&lt; "等級：F (不及格)" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 28, this)"><span class="line-num">28</span><span class="pl-4">}</span></div>
-                        <div class="code-line" onclick="explainLine('score', 29, this)"><span class="line-num">29</span><span class="pl-4">return 0;</span></div>
-                        <div class="code-line" onclick="explainLine('score', 30, this)"><span class="line-num">30</span><span>}</span></div>
-                    </div>
-
-                    <div id="score-explain" class="bg-slate-900/90 p-3 rounded-lg border border-cyan-500/30 text-xs text-cyan-200 min-h-[75px] flex items-center">
-                        💡 提示：點擊上方程式碼任一行，即可看見逐行講解！
-                    </div>
+                <div class="highlight-box" style="text-align: left;">
+                    <p>⚠️ <b>痛點：</b>現實情境往往非非黑即白，例如溫控系統（大於 30 度開冷氣、小於 18 度開暖氣、其餘送風）[cite: 2]。條件超過兩個時，單純 <code>if...else</code> 不敷使用[cite: 2]。</p>
                 </div>
+                <div class="highlight-box" style="text-align: left; border-left: 5px solid #ff79c6;">
+                    <p>✨ <b>解法：</b>使用 <b>if...else if...else</b> 結構來完美應付多重可能性！[cite: 2]</p>
+                </div>
+                <button class="interactive-btn" onclick="toggleAnswer('ans-q1')">💬 思考生活情境題</button>
+                <div id="ans-q1" class="answer-box">
+                    <p style="margin: 0;"><b>Q：能否舉出另一個適用於 <code>if...else if...else</code> 來處理的生活情境呢？</b><br><i>提示：例如超商會員等級（VIP、黃金、一般）、或是紅綠燈號誌（紅燈、黃燈、綠燈）。</i>[cite: 2]</p>
+                </div>
+            </section>
 
-                <!-- 流程圖與重點摘要 -->
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
+            <!-- Slide 3: 語法與規則 -->
+            <section>
+                <h3>if...else if...else 語法結構與規則[cite: 2]</h3>
+                <div class="grid-2" style="grid-template-columns: 1.1fr 0.9fr; align-items: start;">
                     <div>
-                        <h3 class="text-md font-bold text-cyan-300 mb-2"><i class="fa-solid fa-sitemap"></i> 邏輯重點與流程圖</h3>
-                        <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside mb-4">
-                            <li><strong>順序檢查：</strong> 程式由上往下依次測試條件，只要第一個條件成立就執行該區塊。</li>
-                            <li><strong>命中即跳出：</strong> 執行完成立的區塊後，會直接跳過後續所有 else if 與 else。</li>
-                            <li><strong>else 備用：</strong> 上面條件都不成立時，自動執行 else 備用程式。</li>
+                        <pre style="margin: 0;"><code class="language-cpp" data-trim data-noescape style="font-size: 0.72em;">
+if (條件A) {
+    // 當「條件A」成立時執行
+} 
+else if (條件B) {
+    // 當 A 不成立，且 B 成立時執行
+} 
+else {
+    // 以上所有條件都不成立時執行
+}
+                        </code></pre>
+                        <button class="interactive-btn" onclick="openModal('modal-1')">🖼️ 檢視 else-if 階梯流程圖</button>
+                    </div>
+                    <div style="font-size: 0.7em;">
+                        <ul>
+                            <li><b>由上往下比對：</b>依序測試條件，只要第一個成立就執行該區塊[cite: 2]。</li>
+                            <li><b>命中即跳出：</b>執行完成立區塊後，直接跳過後續所有 <code>else if</code> 與 <code>else</code>[cite: 2]。</li>
+                            <li><b>預設備用 (else)：</b>若前面條件全不成立，自動執行 <code>else</code> 內容[cite: 2]。</li>
                         </ul>
                     </div>
+                </div>
+            </section>
 
-                    <button onclick="toggleFlowchart('flowchart-1')" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-medium py-2 rounded-lg transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-eye"></i> 顯示/隱藏 流程圖
-                    </button>
+            <!-- Slide 4: 程式碼範例：成績分級 -->
+            <section style="height: 100%;">
+                <h3 style="font-size: 1.2em; margin-bottom: 5px;">💻 範例：輸入成績判斷等級[cite: 2]</h3>
+                <p style="font-size: 0.65em; color: #8be9fd; margin-bottom: 8px;">👇 <b>將滑鼠移至下方程式碼的不同區域，右側會即時顯示詳細說明！</b></p>
+                
+                <div class="grid-2" style="grid-template-columns: 1.25fr 0.75fr; align-items: start;">
+                    <div style="background: #282a36; padding: 8px; border-radius: 8px; font-size: 0.48em; font-family: monospace; text-align: left; line-height: 1.15; max-height: 450px; overflow-y: auto;">
+                        <div class="code-explain-line" onmouseover="showExplain('exp-1')">#include &lt;iostream&gt;<br>using namespace std;</div>
+                        <div class="code-explain-line" onmouseover="showExplain('exp-2')">int main() {<br>&nbsp;&nbsp;&nbsp;&nbsp;int score;</div>
+                        <div class="code-explain-line" onmouseover="showExplain('exp-3')">&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "請輸入分數 (0-100)：";<br>&nbsp;&nbsp;&nbsp;&nbsp;cin &gt;&gt; score;</div>
+                        <div class="code-explain-line" onmouseover="showExplain('exp-4')">&nbsp;&nbsp;&nbsp;&nbsp;// 檢查輸入是否合理<br>&nbsp;&nbsp;&nbsp;&nbsp;if (score &lt; 0 || score &gt; 100) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "輸入錯誤！分數必須在 0 到 100 之間。" &lt;&lt; endl;<br>&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div class="code-explain-line" onmouseover="showExplain('exp-5')">&nbsp;&nbsp;&nbsp;&nbsp;// 由大到小依序判斷<br>&nbsp;&nbsp;&nbsp;&nbsp;else if (score &gt;= 90) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "等級：A (表現優異)" &lt;&lt; endl;<br>&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div class="code-explain-line" onmouseover="showExplain('exp-6')">&nbsp;&nbsp;&nbsp;&nbsp;else if (score &gt;= 80) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "等級：B (表現良好)" &lt;&lt; endl; // 隱含條件：score &lt; 90<br>&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div class="code-explain-line" onmouseover="showExplain('exp-7')">&nbsp;&nbsp;&nbsp;&nbsp;else if (score &gt;= 70) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "等級：C (表現尚可)" &lt;&lt; endl; // 隱含條件：score &lt; 80<br>&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div class="code-explain-line" onmouseover="showExplain('exp-8')">&nbsp;&nbsp;&nbsp;&nbsp;else if (score &gt;= 60) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "等級：D (及格)" &lt;&lt; endl;     // 隱含條件：score &lt; 70<br>&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div class="code-explain-line" onmouseover="showExplain('exp-9')">&nbsp;&nbsp;&nbsp;&nbsp;else {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cout &lt;&lt; "等級：F (不及格)" &lt;&lt; endl;   // 隱含條件：score &lt; 60<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;return 0;<br>}</div>
+                    </div>
 
-                    <div id="flowchart-1" class="hidden mt-3 w-full bg-slate-900 p-3 rounded-lg border border-slate-700 overflow-x-auto text-left">
-                        <div class="mermaid">
-                        graph TD
-                            Start([開始]) --> Check{分數合法?}
-                            Check -- 否 --> Err[輸出: 輸入錯誤]
-                            Check -- 是 --> C1{score >= 90}
-                            C1 -- 是 --> A[等級 A]
-                            C1 -- 否 --> C2{score >= 80}
-                            C2 -- 是 --> B[等級 B]
-                            C2 -- 否 --> C3{score >= 70}
-                            C3 -- 是 --> C[等級 C]
-                            C3 -- 否 --> C4{score >= 60}
-                            C4 -- 是 --> D[等級 D]
-                            C4 -- 否 --> F[等級 F]
-                        </div>
+                    <div class="explanation-card" id="explain-box" style="max-height: 450px; overflow-y: auto;">
+                        <h5 style="color: #ff79c6; margin: 0 0 6px 0; font-size: 1em;">🔍 程式碼解析</h5>
+                        <p id="explain-text" style="margin: 0; line-height: 1.35;">請將滑鼠懸停在左側的程式碼區塊上，即可檢視該區塊的功能介紹。</p>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Slide 3: 巢狀 if 門票票價範例 -->
-        <section class="slide flex-col max-w-6xl mx-auto w-full space-y-4">
-            <h2 class="text-2xl font-bold text-cyan-400 border-b border-slate-700 pb-2">2. 巢狀 if (Nested if) 範例：門票票價計算</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 程式碼 -->
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3">
-                    <h3 class="text-sm font-bold text-amber-400"><i class="fa-solid fa-layer-group"></i> C++ 範例程式碼 (點擊行號觀看說明)</h3>
-                    <div class="bg-slate-900 p-2 rounded text-xs font-mono text-emerald-300 border border-slate-700 max-h-[380px] overflow-y-auto">
-                        <div class="code-line" onclick="explainLine('ticket', 1, this)"><span class="line-num">1</span><span>#include &lt;iostream&gt;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 2, this)"><span class="line-num">2</span><span>using namespace std;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 4, this)"><span class="line-num">4</span><span>int main() {</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 5, this)"><span class="line-num">5</span><span class="pl-4">int age; char hasStudentCard;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 8, this)"><span class="line-num">8</span><span class="pl-4">cout &lt;&lt; "請輸入您的年齡: "; cin &gt;&gt; age;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 12, this)"><span class="line-num">12</span><span class="pl-4">if (age &gt;= 12 &amp;&amp; age &lt; 65) {</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 13, this)"><span class="line-num">13</span><span class="pl-8">cout &lt;&lt; "請問是否有學生證? (y/n): "; cin &gt;&gt; hasStudentCard;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 17, this)"><span class="line-num">17</span><span class="pl-8">if (hasStudentCard == 'y' || hasStudentCard == 'Y') {</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 18, this)"><span class="line-num">18</span><span class="pl-12">cout &lt;&lt; "符合學生優惠！門票價格為：150 元" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 19, this)"><span class="line-num">19</span><span class="pl-8">} else {</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 20, this)"><span class="line-num">20</span><span class="pl-12">cout &lt;&lt; "一般成人票，門票價格為：250 元" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 21, this)"><span class="line-num">21</span><span class="pl-8">}</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 22, this)"><span class="line-num">22</span><span class="pl-4">} else {</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 24, this)"><span class="line-num">24</span><span class="pl-8">cout &lt;&lt; "符合兒童/敬老特惠！門票價格為：100 元" &lt;&lt; endl;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 25, this)"><span class="line-num">25</span><span class="pl-4">}</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 26, this)"><span class="line-num">26</span><span class="pl-4">return 0;</span></div>
-                        <div class="code-line" onclick="explainLine('ticket', 27, this)"><span class="line-num">27</span><span>}</span></div>
-                    </div>
-
-                    <div id="ticket-explain" class="bg-slate-900/90 p-3 rounded-lg border border-indigo-500/30 text-xs text-indigo-200 min-h-[75px] flex items-center">
-                        💡 提示：點擊程式碼，拆解外層與內層的條件判斷流程。
-                    </div>
-                </div>
-
-                <!-- 流程圖 -->
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
+            <!-- Slide 5: 巢狀 if 敘述介紹 -->
+            <section>
+                <h3>巢狀 if 敘述 (Nested if)[cite: 2]</h3>
+                <div class="grid-2" style="grid-template-columns: 1.1fr 0.9fr; align-items: start;">
                     <div>
-                        <h3 class="text-md font-bold text-cyan-300 mb-2"><i class="fa-solid fa-diagram-project"></i> 巢狀判斷流程圖</h3>
-                        <p class="text-xs text-slate-300 mb-4">
-                            主要條件 (Outer If)：先檢查外層。唯有成立時，才會進入檢查內層次要條件 (Inner If)。
-                        </p>
+                        <pre style="margin: 0;"><code class="language-cpp" data-trim data-noescape style="font-size: 0.68em;">
+if (條件A) {
+    // 當條件A為真時
+    if (條件B) {
+        // A與B皆為真
+    } else {
+        // A為真，但B為假
+    }
+} else {
+    // 當條件A為假時
+}
+                        </code></pre>
+                        <button class="interactive-btn" onclick="openModal('modal-2')">🖼️ 檢視巢狀 if 流程圖</button>
                     </div>
-
-                    <button onclick="toggleFlowchart('flowchart-2')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium py-2 rounded-lg transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-eye"></i> 顯示/隱藏 流程圖
-                    </button>
-
-                    <div id="flowchart-2" class="hidden mt-3 w-full bg-slate-900 p-3 rounded-lg border border-slate-700 overflow-x-auto text-left">
-                        <div class="mermaid">
-                        graph TD
-                            Start([開始]) --> Outer{12 <= age < 65 ?}
-                            Outer -- 否 --> Dis[100元 兒童/敬老特惠]
-                            Outer -- 是 --> Inner{有學生證? y/Y}
-                            Inner -- 是 --> Stu[150元 學生優惠]
-                            Inner -- 否 --> Adult[250元 一般成人票]
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Slide 4: 練習 1 - 三角形判斷 -->
-        <section class="slide flex-col max-w-5xl mx-auto w-full space-y-4">
-            <h2 class="text-2xl font-bold text-cyan-400 border-b border-slate-700 pb-2">動手做練習 (1/4)：三角形判斷填空</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 題目說明與代碼 -->
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-2">
-                    <p class="text-xs text-slate-300">請填入空格 A ~ E，完成三角形類型判斷程式：</p>
-                    <div class="bg-slate-900 p-3 rounded text-[11px] font-mono text-emerald-300 border border-slate-700 overflow-y-auto max-h-[300px]">
-                        <p>#include &lt;iostream&gt;</p>
-                        <p>#include &lt;algorithm&gt; <span class="text-slate-500">// 提供 std::swap</span></p>
-                        <p class="text-amber-300 font-bold">_________ A _________</p>
-                        <p>int main() {</p>
-                        <p class="pl-4">double a, b, c;</p>
-                        <p class="pl-4">cin >> a >> b >> c;</p>
-                        <p class="pl-4 text-slate-500">// 1. 檢查邊長是否皆 > 0</p>
-                        <p class="pl-4">if (<span class="text-amber-300 font-bold">_______ B _______</span>) { return 0; }</p>
-                        <p class="pl-4 text-slate-500">// 2. 確保 c 為最長邊 (排序)</p>
-                        <p class="pl-4">if (a > b) swap(a, b);</p>
-                        <p class="pl-4">if (b > c) swap(b, c);</p>
-                        <p class="pl-4">if (a > b) swap(a, b);</p>
-                        <p class="pl-4 text-slate-500">// 3. 三角形形成條件</p>
-                        <p class="pl-4">if (<span class="text-amber-300 font-bold">_______ C _______</span>) { return 0; }</p>
-                        <p class="pl-4 text-slate-500">// 4. 畢氏定理判斷</p>
-                        <p class="pl-4">double sum_sq = a*a + b*b, c_sq = c*c;</p>
-                        <p class="pl-4">if (<span class="text-amber-300 font-bold">_______ D _______</span>) cout &lt;&lt; "直角三角形";</p>
-                        <p class="pl-4">else if (<span class="text-amber-300 font-bold">____ E ____</span>) cout &lt;&lt; "銳角三角形";</p>
-                        <p class="pl-4">else cout &lt;&lt; "鈍角三角形";</p>
-                        <p>}</p>
+                    <div style="font-size: 0.68em;">
+                        <ul>
+                            <li><b>主要條件 (Outer If)：</b>先檢查最外層條件 A[cite: 2]。</li>
+                            <li><b>次要條件 (Inner If)：</b>唯有當條件 A 成立時，才進入檢查內層條件 B[cite: 2]。</li>
+                            <li><b>邏輯分流：</b>每一層皆可配置獨立的 <code>else</code> 來處理未成立狀況[cite: 2]。</li>
+                        </ul>
                     </div>
                 </div>
+            </section>
 
-                <!-- 答案區 -->
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-sm font-bold text-emerald-400 mb-3"><i class="fa-solid fa-key"></i> 填空答案解答</h3>
-                        <table class="w-full text-xs text-left border-collapse border border-slate-700">
-                            <thead>
-                                <tr class="bg-slate-900 text-cyan-300">
-                                    <th class="border border-slate-700 p-2 w-16">空格</th>
-                                    <th class="border border-slate-700 p-2">程式碼解答與說明</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-slate-200">
-                                <tr>
-                                    <td class="border border-slate-700 p-2 text-amber-300 font-bold">A</td>
-                                    <td class="border border-slate-700 p-2 font-mono">using namespace std;</td>
-                                </tr>
-                                <tr>
-                                    <td class="border border-slate-700 p-2 text-amber-300 font-bold">B</td>
-                                    <td class="border border-slate-700 p-2 font-mono">a <= 0 || b <= 0 || c <= 0</td>
-                                </tr>
-                                <tr>
-                                    <td class="border border-slate-700 p-2 text-amber-300 font-bold">C</td>
-                                    <td class="border border-slate-700 p-2 font-mono">a + b <= c</td>
-                                </tr>
-                                <tr>
-                                    <td class="border border-slate-700 p-2 text-amber-300 font-bold">D</td>
-                                    <td class="border border-slate-700 p-2 font-mono">sum_sq == c_sq</td>
-                                </tr>
-                                <tr>
-                                    <td class="border border-slate-700 p-2 text-amber-300 font-bold">E</td>
-                                    <td class="border border-slate-700 p-2 font-mono">sum_sq > c_sq</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="bg-slate-900/80 p-3 rounded text-xs text-slate-400 mt-2">
-                        💡 <strong>提示：</strong>兩邊之和必須大於第三邊才能構成三角形；$a^2+b^2=c^2$ 為直角，$a^2+b^2>c^2$ 為銳角，$a^2+b^2<c^2$ 為鈍角。
-                    </div>
+            <!-- Slide 6: 巢狀 if 程式碼範例 -->
+            <section>
+                <h3>💻 巢狀 if 範例：電影院門票優惠計算[cite: 2]</h3>
+                <div style="font-size: 0.65em; text-align: left;">
+                    <pre style="margin: 0;"><code class="language-cpp" data-trim style="font-size: 0.78em;">
+int age;
+char hasStudentCard;
+cout &lt;&lt; "請輸入您的年齡：";
+cin &gt;&gt; age;
+
+if (age &gt;= 12 &amp;&amp; age &lt; 65) { // 第一層：基本票價年齡
+    cout &lt;&lt; "請問是否有學生證？(y/n)：";
+    cin &gt;&gt; hasStudentCard;
+    if (hasStudentCard == 'y' || hasStudentCard == 'Y') { // 第二層：學生優惠
+        cout &lt;&lt; "符合學生優惠！門票價格為：150 元" &lt;&lt; endl;
+    } else {
+        cout &lt;&lt; "一般成人票，門票價格為：250 元" &lt;&lt; endl;
+    }
+} else { // 第一層否定
+    cout &lt;&lt; "符合兒童/敬老特惠！門票價格為：100 元" &lt;&lt; endl;
+}
+                    </code></pre>
                 </div>
-            </div>
-        </section>
+                <p style="font-size: 0.65em; color: #50fa7b; margin-top: 6px;"><b>結構特點：</b>結合年齡層篩選與身分複查，透過巢狀結構清晰呈現多層次優惠邏輯！[cite: 2]</p>
+            </section>
 
-        <!-- Slide 5: 練習 2 - 時數薪資計算 (包含完整測資對照) -->
-        <section class="slide flex-col max-w-5xl mx-auto w-full space-y-4">
-            <h2 class="text-2xl font-bold text-cyan-400 border-b border-slate-700 pb-2">動手做練習 (2/4)：時數薪資計算測資對照</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 題目說明與即時試算 -->
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3">
-                    <h3 class="text-sm font-bold text-amber-400"><i class="fa-solid fa-calculator"></i> 分段薪資計算規則與試算</h3>
-                    <ul class="text-xs text-slate-300 space-y-1 list-disc list-inside">
-                        <li><strong>&lt;= 60 小時：</strong> 按基本工資 75 元計算。</li>
-                        <li><strong>61 ~ 75 小時：</strong> 超過部分按 1.25 倍計薪。</li>
-                        <li><strong>> 75 小時：</strong> 超過部分按 1.75 倍計薪。</li>
+            <!-- Slide 7: 動手做練習 1 (三角形判別) -->
+            <section>
+                <h3>📝 動手做練習 1：三角形與畢氏定理判別[cite: 2]</h3>
+                <div style="font-size: 0.6em; text-align: left; max-height: 420px; overflow-y: auto;">
+                    <p style="margin: 0 0 4px 0;">請填入空格 A、B、C、D、E 完成三角形分類程式：[cite: 2]</p>
+                    <pre style="margin: 0;"><code class="language-cpp" data-trim style="font-size: 0.75em;">
+#include &lt;iostream&gt;
+#include &lt;algorithm&gt;
+_________A__________
+int main() {
+    double a, b, c;
+    cin &gt;&gt; a &gt;&gt; b &gt;&gt; c;
+    if (___________B__________ ) { cout &lt;&lt; "錯誤邊長" &lt;&lt; endl; return 0; }
+    if (a &gt; b) swap(a, b); if (b &gt; c) swap(b, c); if (a &gt; b) swap(a, b);
+    if (_____C____) { cout &lt;&lt; "無法構成三角形" &lt;&lt; endl; return 0; }
+    double sum_sq = a * a + b * b; double c_sq = c * c;
+    if (______D_______) { cout &lt;&lt; "直角三角形。" &lt;&lt; endl; }
+    else if (______E_____) { cout &lt;&lt; "銳角三角形。" &lt;&lt; endl; }
+    else { cout &lt;&lt; "鈍角三角形。" &lt;&lt; endl; }
+    return 0;
+}
+                    </code></pre>
+                </div>
+                <button class="interactive-btn" onclick="toggleAnswer('ans-ex1')">💡 檢視解答與填空</button>
+                <div id="ans-ex1" class="answer-box" style="font-size: 0.68em;">
+                    <p style="margin: 0 0 4px 0;"><b>解答對照表：[cite: 2]</b></p>
+                    <ul style="margin: 0; padding-left: 15px;">
+                        <li><b>A:</b> <code>using namespace std;</code>[cite: 2]</li>
+                        <li><b>B:</b> <code>a &lt;= 0 || b &lt;= 0 || c &lt;= 0</code>[cite: 2]</li>
+                        <li><b>C:</b> <code>a + b &lt;= c</code>[cite: 2]</li>
+                        <li><b>D:</b> <code>sum_sq == c_sq</code>[cite: 2]</li>
+                        <li><b>E:</b> <code>sum_sq &gt; c_sq</code>[cite: 2]</li>
                     </ul>
-                    <div class="flex gap-2 pt-2">
-                        <input type="number" id="work-hours" placeholder="輸入時數 (如 80)" class="bg-slate-900 border border-slate-600 rounded px-3 py-1.5 text-xs text-white flex-1 focus:outline-none focus:border-amber-400">
-                        <button onclick="calculateSalary()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-3 py-1.5 rounded transition">計算薪資</button>
-                    </div>
-                    <div id="salary-result" class="bg-slate-900 p-3 rounded text-xs font-mono text-amber-300 border border-slate-700 min-h-[60px] flex items-center">
-                        請輸入工作時數進行計算...
-                    </div>
                 </div>
+            </section>
 
-                <!-- 講義規定的5個測資對照表 -->
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-                    <h3 class="text-sm font-bold text-cyan-300 mb-3"><i class="fa-solid fa-list-check"></i> 講義 5 組測資計算結果對照表</h3>
-                    <table class="w-full text-xs text-left border-collapse border border-slate-700">
-                        <thead>
-                            <tr class="bg-slate-900 text-cyan-300">
-                                <th class="border border-slate-700 p-2 w-20">測資 (小時)</th>
-                                <th class="border border-slate-700 p-2">計算公式細節</th>
-                                <th class="border border-slate-700 p-2 text-right">應領薪資結果</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-slate-200">
-                            <tr>
-                                <td class="border border-slate-700 p-2 font-bold text-amber-400">80</td>
-                                <td class="border border-slate-700 p-2 font-mono text-[11px]">(60×75) + (15×75×1.25) + (5×75×1.75)</td>
-                                <td class="border border-slate-700 p-2 text-right font-bold text-emerald-400">6562.5 元</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-slate-700 p-2 font-bold text-amber-400">59</td>
-                                <td class="border border-slate-700 p-2 font-mono text-[11px]">59 × 75</td>
-                                <td class="border border-slate-700 p-2 text-right font-bold text-emerald-400">4425 元</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-slate-700 p-2 font-bold text-amber-400">70</td>
-                                <td class="border border-slate-700 p-2 font-mono text-[11px]">(60×75) + (10×75×1.25)</td>
-                                <td class="border border-slate-700 p-2 text-right font-bold text-emerald-400">5437.5 元</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-slate-700 p-2 font-bold text-amber-400">88</td>
-                                <td class="border border-slate-700 p-2 font-mono text-[11px]">(60×75) + (15×75×1.25) + (13×75×1.75)</td>
-                                <td class="border border-slate-700 p-2 text-right font-bold text-emerald-400">7612.5 元</td>
-                            </tr>
-                            <tr>
-                                <td class="border border-slate-700 p-2 font-bold text-amber-400">100</td>
-                                <td class="border border-slate-700 p-2 font-mono text-[11px]">(60×75) + (15×75×1.25) + (25×75×1.75)</td>
-                                <td class="border border-slate-700 p-2 text-right font-bold text-emerald-400">9187.5 元</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- Slide 6: 練習 3 & 4 (閏年 Bug 除錯 & 象限判斷) -->
-        <section class="slide flex-col max-w-6xl mx-auto w-full space-y-4">
-            <h2 class="text-2xl font-bold text-cyan-400 border-b border-slate-700 pb-2">動手做練習 (3 & 4)：閏年 Code Review 與 象限判斷</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 練習 3: 閏年除錯 -->
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3">
-                    <h3 class="text-base font-bold text-rose-400"><i class="fa-solid fa-bug"></i> 練習 3：閏年判斷 4 處錯誤 Code Review</h3>
-                    <div class="space-y-2 text-xs">
-                        <div class="bg-slate-900 p-2 rounded border border-slate-700 space-y-1">
-                            <p class="text-rose-300"><strong>錯誤 1：語法錯誤（結尾缺分號）</strong></p>
-                            <p class="text-slate-400 font-mono pl-3">std::cin >> year <span class="text-rose-400">← 缺少 ;</span></p>
-                        </div>
-                        <div class="bg-slate-900 p-2 rounded border border-slate-700 space-y-1">
-                            <p class="text-rose-300"><strong>錯誤 2：運算子錯誤（賦值而非比較）</strong></p>
-                            <p class="text-slate-400 font-mono pl-3">year % 400 = 0 <span class="text-rose-400">← 應改為 ==</span></p>
-                        </div>
-                        <div class="bg-slate-900 p-2 rounded border border-slate-700 space-y-1">
-                            <p class="text-rose-300"><strong>錯誤 3：邏輯順序錯誤（條件被提前攔截）</strong></p>
-                            <p class="text-slate-400 pl-3">先判斷 <code class="text-amber-300">% 4 == 0</code> 會導致 100/400/4000 的倍數提前被判定，後續的 else if 永遠執行不到。</p>
-                        </div>
-                        <div class="bg-slate-900 p-2 rounded border border-slate-700 space-y-1">
-                            <p class="text-rose-300"><strong>錯誤 4：規則判定錯誤</strong></p>
-                            <p class="text-slate-400 pl-3">講義規則規定「每四千年不閏」，但程式碼中 4000 倍數卻輸出「平年」的邏輯未正確調整優順序。</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 練習 4: 象限判斷程式碼解析 -->
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3 flex flex-col justify-between">
+            <!-- Slide 8: 動手做練習 2 (薪資計算) -->
+            <section>
+                <h3>📝 動手做練習 2：工作時數薪資計算[cite: 2]</h3>
+                <div class="grid-2" style="font-size: 0.65em;">
                     <div>
-                        <h3 class="text-base font-bold text-sky-400 mb-2"><i class="fa-solid fa-compass"></i> 練習 4：象限判斷完整 logic 填空</h3>
-                        <div class="bg-slate-900 p-2.5 rounded text-[11px] font-mono text-sky-200 border border-slate-700 space-y-1 max-h-[220px] overflow-y-auto">
-                            <p>if (x == 0 && y == 0) cout << "原點";</p>
-                            <p>else if (x == 0) cout << "y 軸";</p>
-                            <p>else if (y == 0) cout << "x 軸";</p>
-                            <p>else if (x > 0 && y > 0) cout << "第一象限";</p>
-                            <p>else if (x < 0 && y > 0) cout << "第二象限";</p>
-                            <p>else if (x < 0 && y < 0) cout << "第三象限";</p>
-                            <p>else cout << "第四象限";</p>
+                        <p style="margin-top: 0;"><b>給定程式碼邏輯：[cite: 2]</b></p>
+                        <ul style="margin: 0; padding-left: 15px;">
+                            <li>基資：75 元/小時[cite: 2]</li>
+                            <li>$\le 60$ 小時：原薪計算[cite: 2]</li>
+                            <li>$61\sim 75$ 小時：超過部分 1.25 倍[cite: 2]</li>
+                            <li>$> 75$ 小時：超過 75 小時部分 1.75 倍[cite: 2]</li>
+                        </ul>
+                        <button class="interactive-btn" onclick="toggleAnswer('ans-ex2')">💡 檢視測資輸出結果</button>
+                    </div>
+                    <div>
+                        <div id="ans-ex2" class="answer-box" style="display:block; font-size: 0.8em; max-height: 380px;">
+                            <p style="margin: 0 0 4px 0; color: #50fa7b;"><b>各測資輸出結果：[cite: 2]</b></p>
+                            <table class="custom-table">
+                                <tr><th>測資 (hours)</th><th>計算結果 (元)</th></tr>
+                                <tr><td>80</td><td>$60\times75 + 15\times75\times1.25 + 5\times75\times1.75 = 6281.25$[cite: 2]</td></tr>
+                                <tr><td>59</td><td>$59 \times 75 = 4425$[cite: 2]</td></tr>
+                                <tr><td>70</td><td>$60\times75 + 10\times75\times1.25 = 5437.5$[cite: 2]</td></tr>
+                                <tr><td>88</td><td>$60\times75 + 15\times75\times1.25 + 13\times75\times1.75 = 7331.25$[cite: 2]</td></tr>
+                                <tr><td>100</td><td>$60\times75 + 15\times75\times1.25 + 25\times75\times1.75 = 8875$[cite: 2]</td></tr>
+                            </table>
                         </div>
                     </div>
-                    <div class="bg-slate-900/90 p-3 rounded text-xs border border-sky-800 text-sky-200">
-                        <p class="font-bold mb-1">💡 邏輯解析重點：</p>
-                        <p>1. 優先排除 (0,0) 原點與兩軸 (x=0 或 y=0)。</p>
-                        <p>2. 進入四大象限時，x 與 y 皆不為 0，因此最後一個分流可直接用 <code class="text-amber-300">else</code> 代表第四象限 (x>0, y<0)。</p>
-                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-    </main>
+            <!-- Slide 9: 動手做練習 3 (閏年判斷 Bug) -->
+            <section>
+                <h3>📝 動手做練習 3：閏年判斷程式 Debug[cite: 2]</h3>
+                <div style="font-size: 0.62em; text-align: left;">
+                    <p style="margin: 0 0 4px 0;">判斷閏年邏輯（每四年一閏、百年不閏、四百年一閏、四千年不閏）[cite: 2]。原程式碼有 4 個錯誤，請找出並說明：[cite: 2]</p>
+                </div>
+                <button class="interactive-btn blue-btn" onclick="openModal('modal-3')">🔍 開啟閏年 Debug 錯誤解析報告</button>
+            </section>
 
-    <!-- 底部控制列 -->
-    <footer class="bg-slate-800 border-t border-slate-700 px-6 py-4 flex justify-between items-center z-10">
-        <button id="prev-btn" onclick="changeSlide(-1)" class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-2 rounded-lg text-sm transition font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-            <i class="fa-solid fa-arrow-left"></i> 上一張 (←)
-        </button>
-        <div class="text-xs text-slate-400 hidden md:block">
-            提示：可用鍵盤方向鍵 <kbd class="px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-slate-300">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-900 border border-slate-700 rounded text-slate-300">→</kbd> 切換
+            <!-- Slide 10: 動手做練習 4 (象限判斷) -->
+            <section>
+                <h3>📝 動手做練習 4：座標象限判斷[cite: 2]</h3>
+                <div style="font-size: 0.62em; text-align: left; max-height: 420px; overflow-y: auto;">
+                    <p style="margin: 0 0 4px 0;">下方為判斷 $(x, y)$ 座標象限的完整程式碼，完美運用了 <code>if...else if...else</code> 進行多重排他性區分：[cite: 2]</p>
+                    <pre style="margin: 0;"><code class="language-cpp" data-trim style="font-size: 0.72em;">
+#include &lt;iostream&gt;
+using namespace std;
+int main() {
+    double x, y;
+    cout &lt;&lt; "請輸入 x, y 座標: ";
+    cin &gt;&gt; x &gt;&gt; y;
+    if (x == 0 &amp;&amp; y == 0) {
+        cout &lt;&lt; "原點" &lt;&lt; endl;
+    } else if (x == 0) {
+        cout &lt;&lt; "y 軸" &lt;&lt; endl;
+    } else if (y == 0) {
+        cout &lt;&lt; "x 軸" &lt;&lt; endl;
+    } else if (x &gt; 0 &amp;&amp; y &gt; 0) {
+        cout &lt;&lt; "第一象限" &lt;&lt; endl;
+    } else if (x &lt; 0 &amp;&amp; y &gt; 0) {
+        cout &lt;&lt; "第二象限" &lt;&lt; endl;
+    } else if (x &lt; 0 &amp;&amp; y &lt; 0) {
+        cout &lt;&lt; "第三象限" &lt;&lt; endl;
+    } else { 
+        cout &lt;&lt; "第四象限" &lt;&lt; endl;
+    }
+    return 0;
+}
+                    </code></pre>
+                </div>
+            </section>
+
+            <!-- Slide 11: 總結 -->
+            <section>
+                <h2>總結</h2>
+                <ul style="line-height: 1.8; font-size: 0.82em;">
+                    <li>多重互斥條件判斷 ➔ 使用 <b>if...else if...else</b> 階梯結構[cite: 2]。</li>
+                    <li>階層式、附帶前提條件的過濾 ➔ 使用 <b>巢狀 if (Nested if)</b>[cite: 2]。</li>
+                    <li>注意程式碼語法細節（如分號遺漏、指定運算子 <code>=</code> 與比較運算子 <code>==</code> 的區分）。</li>
+                </ul>
+                <p style="margin-top: 25px; color: #50fa7b; font-size: 0.85em;"><b>Q &amp; A 時間 / 準備進入實作演練！</b></p>
+            </section>
+
         </div>
-        <button id="next-btn" onclick="changeSlide(1)" class="bg-cyan-600 hover:bg-cyan-500 text-white px-5 py-2 rounded-lg text-sm transition font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-            下一張 (→) <i class="fa-solid fa-arrow-right"></i>
-        </button>
-    </footer>
+    </div>
 
-    <!-- JS 控制邏輯 -->
+    <!-- Modal 1: 流程圖 1 -->
+    <div id="modal-1" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('modal-1')">✕</button>
+            <h4 style="margin-top:0; color:#bd93f9;">Fig: else-if ladder 流程圖</h4>
+            <svg width="420" height="350" viewBox="0 0 420 350">
+                <circle cx="210" cy="15" r="10" class="node-start" />
+                <line x1="210" y1="25" x2="210" y2="55" class="line" />
+                
+                <polygon points="210,55 280,85 210,115 140,85" class="node-diamond" />
+                <text x="210" y="85" style="font-size:11px;">Condition-1</text>
+                
+                <line x1="210" y1="115" x2="210" y2="155" class="line" />
+                <text x="225" y="135" class="line-text">False</text>
+                <rect x="150" y="155" width="120" height="35" class="node-rect" />
+                <text x="210" y="172.5" style="font-size:11px;">Statement-1</text>
+
+                <line x1="280" y1="85" x2="350" y2="85" class="line" />
+                <text x="315" y="75" class="line-text">True</text>
+                <rect x="300" y="155" width="100" height="35" class="node-rect" />
+                <text x="350" y="172.5" style="font-size:11px;">Statement-s</text>
+
+                <line x1="210" y1="190" x2="210" y2="225" class="line" />
+                <polygon points="210,225 270,250 210,275 150,250" class="node-diamond" />
+                <text x="210" y="250" style="font-size:11px;">Condition-2</text>
+
+                <line x1="210" y1="275" x2="210" y2="310" class="line" />
+                <text x="225" y="295" class="line-text">False</text>
+                <rect x="150" y="310" width="120" height="30" class="node-rect" />
+                <text x="210" y="325" style="font-size:11px;">Statement-2</text>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Modal 2: 流程圖 2 -->
+    <div id="modal-2" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('modal-2')">✕</button>
+            <h4 style="margin-top:0; color:#8be9fd;">巢狀 if 條件判斷流程圖</h4>
+            <svg width="480" height="280" viewBox="0 0 480 280">
+                <polygon points="240,10 320,45 240,80 160,45" class="node-diamond" />
+                <text x="240" y="45" style="font-size:11px;">條件判斷 (Outer)</text>
+
+                <!-- True Branch -->
+                <line x1="160" y1="45" x2="100" y2="90" class="line" />
+                <text x="120" y="60" class="line-text" style="fill:#50fa7b;">True</text>
+                <polygon points="100,90 160,120 100,150 40,120" class="node-diamond" />
+                <text x="100" y="120" style="font-size:10px;">內層條件 1</text>
+
+                <line x1="40" y1="120" x2="15" y2="180" class="line" />
+                <rect x="0" y="180" width="100" height="30" class="node-rect" />
+                <text x="50" y="195" style="font-size:10px;">內1成立時動作</text>
+
+                <!-- False Branch -->
+                <line x1="320" y1="45" x2="380" y2="90" class="line" />
+                <text x="360" y="60" class="line-text" style="fill:#ff5555;">False</text>
+                <polygon points="380,90 440,120 380,150 320,120" class="node-diamond" />
+                <text x="380" y="120" style="font-size:10px;">內層條件 2</text>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Modal 3: 閏年 Debug 解析 -->
+    <div id="modal-3" class="modal-overlay">
+        <div class="modal-content" style="max-width: 620px;">
+            <button class="close-btn" onclick="closeModal('modal-3')">✕</button>
+            <h4 style="margin-top:0; color:#ff79c6;">🔍 閏年程式碼的 4 處錯誤解析報告[cite: 2]</h4>
+            <table class="custom-table" style="font-size: 0.75em;">
+                <tr><th>錯誤地方</th><th>說明[cite: 2]</th></tr>
+                <tr><td><code>std::cin &gt;&gt; year</code> (少分號)[cite: 2]</td><td>第 6 行結尾遺漏分號 <code>;</code>，會導致編譯錯誤[cite: 2]。</td></tr>
+                <tr><td><code>year % 400 = 0</code> (指定運算子誤用)[cite: 2]</td><td>將比較運算子寫成指定運算子 <code>=</code>，應改為雙等號 <code>==</code>[cite: 2]。</td></tr>
+                <tr><td>邏輯順序錯亂[cite: 2]</td><td><code>year % 100 == 0</code> 放在 <code>year % 4 == 0</code> 之後會攔截掉所有世紀年，導致 400 的判斷失效。正確應先判斷 400 再判斷 100[cite: 2]。</td></tr>
+                <tr><td>4000 年的閏年規則誤植[cite: 2]</td><td>題目指出「每四千年不閏」，程式碼卻印出平年（但平年與不閏語意重複或條件順序有誤），應對應精確的數學排他邏輯[cite: 2]。</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Reveal.js JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/plugin/highlight/highlight.min.js"></script>
     <script>
-        mermaid.initialize({ startOnLoad: false, theme: 'dark' });
-
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        const totalSlides = slides.length;
-
-        document.getElementById('total-slides').innerText = totalSlides;
-
-        function updateSlides() {
-            slides.forEach((slide, index) => {
-                if(index === currentSlide) {
-                    slide.classList.add('active');
-                } else {
-                    slide.classList.remove('active');
-                }
-            });
-
-            document.getElementById('current-slide').innerText = currentSlide + 1;
-            document.getElementById('prev-btn').disabled = currentSlide === 0;
-            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
-        }
-
-        function changeSlide(direction) {
-            currentSlide += direction;
-            if (currentSlide < 0) currentSlide = 0;
-            if (currentSlide >= totalSlides) currentSlide = totalSlides - 1;
-            updateSlides();
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === 'Space') {
-                if(currentSlide < totalSlides - 1) changeSlide(1);
-            } else if (e.key === 'ArrowLeft') {
-                if(currentSlide > 0) changeSlide(-1);
-            }
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            width: 1280,
+            height: 720,
+            margin: 0.02,
+            minScale: 0.2,
+            maxScale: 2.0,
+            plugins: [ RevealHighlight ]
         });
 
-        function toggleFlowchart(id) {
-            const el = document.getElementById(id);
-            if (el.classList.contains('hidden')) {
-                el.classList.remove('hidden');
-                mermaid.run({
-                    nodes: el.querySelectorAll('.mermaid')
-                });
+        function toggleAnswer(id) {
+            var ans = document.getElementById(id);
+            if (ans.style.display === "none" || ans.style.display === "") {
+                ans.style.display = "block";
             } else {
-                el.classList.add('hidden');
+                ans.style.display = "none";
             }
         }
 
-        const lineExplanations = {
-            score: {
-                1: "<strong>第 1 行：</strong>引入標準輸入輸出函式庫 &lt;iostream&gt;。",
-                2: "<strong>第 2 行：</strong>使用標準命名空間 std。",
-                5: "<strong>第 5 行：</strong>宣告儲存分數的整數變數 score。",
-                10: "<strong>第 10-12 行：</strong>檢查分數是否小於 0 或大於 100，排除不合法輸入。",
-                14: "<strong>第 14-25 行：</strong>依序檢查 >=90 (A), >=80 (B), >=70 (C), >=60 (D)。",
-                26: "<strong>第 26-28 行：</strong>上述條件皆不成立時，進入 else 印出等級 F。"
-            },
-            ticket: {
-                5: "<strong>第 5 行：</strong>宣告年齡 age 與學生證狀態 hasStudentCard。",
-                12: "<strong>第 12 行 [外層 if]：</strong>判斷年齡是否在 12 到 64 歲之間。",
-                17: "<strong>第 17 行 [內層 if]：</strong>年齡符合時，進一步檢查是否有學生證 ('y' 或 'Y')。",
-                22: "<strong>第 22 行 [外層 else]：</strong>處理未滿 12 歲或 65 歲以上的敬老/兒童特惠。"
-            }
+        function openModal(id) {
+            document.getElementById(id).style.display = "flex";
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+
+        const explanations = {
+            'exp-1': '<b>#include &lt;iostream&gt;</b>：引入標準輸入輸出函式庫[cite: 2]。',
+            'exp-2': '<b>int main() 與 score</b>：主程式入口，並宣告整數變數 score[cite: 2]。',
+            'exp-3': '<b>cin &gt;&gt; score</b>：提示使用者輸入分數並存入變數[cite: 2]。',
+            'exp-4': '<b>合法性檢查</b>：利用 <code>score &lt; 0 || score &gt; 100</code> 先過濾不合理的異常分數[cite: 2]。',
+            'exp-5': '<b>score &gt;= 90 (等級 A)</b>：由大到小第一個把關點，高於 90 者判定為 A[cite: 2]。',
+            'exp-6': '<b>score &gt;= 80 (等級 B)</b>：因前面已過濾掉 $\ge 90$，此處隱含條件為 $80 \le score &lt; 90$[cite: 2]。',
+            'exp-7': '<b>score &gt;= 70 (等級 C)</b>：隱含條件為 $70 \le score &lt; 80$[cite: 2]。',
+            'exp-8': '<b>score &gt;= 60 (等級 D)</b>：隱含條件為 $60 \le score &lt; 70$[cite: 2]。',
+            'exp-9': '<b>else (等級 F)</b>：上述所有條件皆不成立時（即小於 60 分），落入不及格區間[cite: 2]。'
         };
 
-        function explainLine(type, lineNum, element) {
-            const parent = element.parentElement;
-            parent.querySelectorAll('.code-line').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-
-            const displayEl = document.getElementById(`${type}-explain`);
-            if (lineExplanations[type] && lineExplanations[type][lineNum]) {
-                displayEl.innerHTML = lineExplanations[type][lineNum];
-            } else {
-                displayEl.innerHTML = `<strong>第 ${lineNum} 行：</strong>程式執行敘述。`;
-            }
+        function showExplain(key) {
+            document.getElementById('explain-text').innerHTML = explanations[key];
         }
-
-        function addIdea() {
-            const input = document.getElementById('thinking-input');
-            const val = input.value.trim();
-            if(val) {
-                const li = document.createElement('li');
-                li.innerText = val;
-                document.getElementById('idea-list').appendChild(li);
-                input.value = '';
-            }
-        }
-
-        function calculateSalary() {
-            const hours = parseFloat(document.getElementById('work-hours').value);
-            const resultEl = document.getElementById('salary-result');
-            const BASE_RATE = 75.0;
-
-            if (isNaN(hours) || hours < 0) {
-                resultEl.innerHTML = '<span class="text-rose-400">請輸入有效的時數！</span>';
-                return;
-            }
-
-            let salary = 0.0;
-            let detail = '';
-
-            if (hours <= 60) {
-                salary = hours * BASE_RATE;
-                detail = `${hours} × 75`;
-            } else if (hours <= 75) {
-                salary = (60 * BASE_RATE) + ((hours - 60) * BASE_RATE * 1.25);
-                detail = `(60×75) + (${hours - 60}×75×1.25)`;
-            } else {
-                salary = (60 * BASE_RATE) + (15 * BASE_RATE * 1.25) + ((hours - 75) * BASE_RATE * 1.75);
-                detail = `(60×75) + (15×75×1.25) + (${hours - 75}×75×1.75)`;
-            }
-
-            resultEl.innerHTML = `<div>時數：<strong>${hours}</strong> 小時<br>計算：${detail}<br>應領薪資：<strong class="text-emerald-400">${salary}</strong> 元</div>`;
-        }
-
-        updateSlides();
     </script>
 </body>
 </html>
