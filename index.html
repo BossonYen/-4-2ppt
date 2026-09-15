@@ -432,121 +432,105 @@ int main() {
         </div>
     </div>
 
-    <!-- Modal 1: 參照 image_057487.png (Else-if Ladder) -->
+    <!-- Modal 1: 修正版 Else-if Ladder 流程圖（階梯向右展開） -->
     <div id="modal-1" class="modal-overlay">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 90vw;">
             <button class="close-btn" onclick="closeModal('modal-1')">✕</button>
             <h4 style="margin-top:0; color:#bd93f9;">Fig: else-if ladder 流程圖</h4>
-            <svg width="600" height="380" viewBox="0 0 600 380">
+            <svg width="780" height="340" viewBox="0 0 780 340">
                 <!-- Start node -->
-                <circle cx="70" cy="25" r="9" class="node-start" />
-                <line x1="70" y1="34" x2="70" y2="65" class="line" />
+                <circle cx="60" cy="30" r="9" class="node-start" />
+                <line x1="60" y1="39" x2="60" y2="70" class="line" />
 
                 <!-- Condition-1 -->
-                <polygon points="70,65 130,95 70,125 10,95" class="node-diamond" />
-                <text x="70" y="95" style="font-size:11px;">Condition-1</text>
+                <polygon points="60,70 120,100 60,130 0,100" class="node-diamond" />
+                <text x="60" y="100" style="font-size:11px;">Condition-1</text>
 
                 <!-- Cond-1 True -> Statement-1 -->
-                <line x1="70" y1="125" x2="70" y2="280" class="line" />
-                <text x="50" y="160" class="line-text" style="fill:#50fa7b;">True</text>
-                <rect x="20" y="280" width="100" height="40" class="node-rect" />
-                <text x="70" y="300" style="font-size:11px;">Statement-1</text>
+                <line x1="60" y1="130" x2="60" y2="220" class="line" />
+                <text x="40" y="170" class="line-text" style="fill:#50fa7b;">True</text>
+                <rect x="10" y="220" width="100" height="40" class="node-rect" />
+                <text x="60" y="240" style="font-size:11px;">Statement-1</text>
 
                 <!-- Cond-1 False -> Condition-2 -->
-                <line x1="130" y1="95" x2="220" y2="95" class="line" />
-                <text x="160" y="85" class="line-text" style="fill:#ff5555;">False</text>
+                <line x1="120" y1="100" x2="220" y2="100" class="line" />
+                <text x="160" y="90" class="line-text" style="fill:#ff5555;">False</text>
 
-                <polygon points="260,65 320,95 260,125 200,95" class="node-diamond" />
-                <text x="260" y="95" style="font-size:11px;">Condition-2</text>
+                <polygon points="260,70 320,100 260,130 200,100" class="node-diamond" />
+                <text x="260" y="100" style="font-size:11px;">Condition-2</text>
 
                 <!-- Cond-2 True -> Statement-2 -->
-                <line x1="260" y1="125" x2="260" y2="280" class="line" />
-                <text x="240" y="160" class="line-text" style="fill:#50fa7b;">True</text>
-                <rect x="210" y="280" width="100" height="40" class="node-rect" />
-                <text x="260" y="300" style="font-size:11px;">Statement-2</text>
+                <line x1="260" y1="130" x2="260" y2="220" class="line" />
+                <text x="240" y="170" class="line-text" style="fill:#50fa7b;">True</text>
+                <rect x="210" y="220" width="100" height="40" class="node-rect" />
+                <text x="260" y="240" style="font-size:11px;">Statement-2</text>
 
-                <!-- Cond-2 False -> Condition-n (dashed line or bridge) -->
-                <line x1="320" y1="95" x2="410" y2="95" class="line-dash" />
-                <text x="350" y="85" class="line-text" style="fill:#ff5555;">False</text>
+                <!-- Cond-2 False -> Condition-n -->
+                <line x1="320" y1="100" x2="420" y2="100" class="line-dash" />
+                <text x="360" y="90" class="line-text" style="fill:#ff5555;">False</text>
 
-                <polygon points="450,65 510,95 450,125 390,95" class="node-diamond" />
-                <text x="450" y="95" style="font-size:11px;">Condition-n</text>
+                <polygon points="460,70 520,100 460,130 400,100" class="node-diamond" />
+                <text x="460" y="100" style="font-size:11px;">Condition-n</text>
 
                 <!-- Cond-n True -> Statement-n -->
-                <line x1="450" y1="125" x2="450" y2="280" class="line" />
-                <text x="430" y="160" class="line-text" style="fill:#50fa7b;">True</text>
-                <rect x="400" y="280" width="100" height="40" class="node-rect" />
-                <text x="450" y="300" style="font-size:11px;">Statement-n</text>
+                <line x1="460" y1="130" x2="460" y2="220" class="line" />
+                <text x="440" y="170" class="line-text" style="fill:#50fa7b;">True</text>
+                <rect x="410" y="220" width="100" height="40" class="node-rect" />
+                <text x="460" y="240" style="font-size:11px;">Statement-n</text>
 
-                <!-- Cond-n False -> Statement-s -->
-                <line x1="510" y1="95" x2="555" y2="95" class="line" />
-                <line x1="555" y1="95" x2="555" y2="280" class="line" />
-                <text x="532" y="85" class="line-text" style="fill:#ff5555;">False</text>
-                <rect x="510" y="280" width="90" height="40" class="node-rect" />
-                <text x="555" y="300" style="font-size:10px;">Statement-s</text>
-
-                <!-- Merge to Next Statement -->
-                <line x1="70" y1="320" x2="70" y2="350" class="line" />
-                <line x1="260" y1="320" x2="260" y2="350" class="line" />
-                <line x1="450" y1="320" x2="450" y2="350" class="line" />
-                <line x1="555" y1="320" x2="555" y2="350" class="line" />
-                <circle cx="310" cy="350" r="6" fill="#8be9fd" />
-                <text x="310" y="368" style="font-size:11px; fill:#8be9fd;">Next Statement</text>
+                <!-- Cond-n False -> Statement-s (Else) -->
+                <line x1="520" y1="100" x2="620" y2="100" class="line" />
+                <text x="560" y="90" class="line-text" style="fill:#ff5555;">False</text>
+                <rect x="580" y="80" width="100" height="40" class="node-rect" />
+                <text x="630" y="100" style="font-size:11px;">Statement-s</text>
             </svg>
         </div>
     </div>
 
-    <!-- Modal 2: 參照 image_05774d.png (巢狀 if 流程圖) -->
+    <!-- Modal 2: 修正版巢狀 if 流程圖 -->
     <div id="modal-2" class="modal-overlay">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 90vw;">
             <button class="close-btn" onclick="closeModal('modal-2')">✕</button>
             <h4 style="margin-top:0; color:#8be9fd;">巢狀 if 條件判斷流程圖</h4>
-            <svg width="680" height="300" viewBox="0 0 680 300">
+            <svg width="760" height="340" viewBox="0 0 760 340">
                 <!-- Root Condition -->
-                <polygon points="340,15 420,50 340,85 260,50" class="node-diamond" />
-                <text x="340" y="50" style="font-size:12px;">條件判斷</text>
+                <polygon points="380,15 460,50 380,85 300,50" class="node-diamond" />
+                <text x="380" y="50" style="font-size:12px;">外層條件 A</text>
 
                 <!-- True Branch (Left) -->
-                <line x1="260" y1="50" x2="160" y2="110" class="line" />
-                <text x="200" y="72" class="line-text" style="fill:#50fa7b;">True</text>
+                <line x1="300" y1="50" x2="190" y2="110" class="line" />
+                <text x="235" y="72" class="line-text" style="fill:#50fa7b;">True</text>
 
-                <polygon points="160,110 240,145 160,180 80,145" class="node-diamond" />
-                <text x="160" y="145" style="font-size:11px;">內層條件判斷1</text>
+                <polygon points="190,110 270,145 190,180 110,145" class="node-diamond" />
+                <text x="190" y="145" style="font-size:11px;">內層條件 B</text>
 
                 <!-- Inner True 1 -> Statement 1 -->
-                <line x1="80" y1="145" x2="30" y2="210" class="line" />
-                <text x="45" y="175" class="line-text" style="fill:#50fa7b;">True</text>
-                <rect x="0" y="210" width="130" height="50" class="node-rect" />
-                <text x="65" y="230" style="font-size:10px;">內層條件判斷1成立時，</text>
-                <text x="65" y="245" style="font-size:10px;">執行的程式碼</text>
+                <line x1="110" y1="145" x2="60" y2="220" class="line" />
+                <text x="70" y="175" class="line-text" style="fill:#50fa7b;">True</text>
+                <rect x="0" y="220" width="120" height="50" class="node-rect" />
+                <text x="60" y="240" style="font-size:10px;">A 與 B 皆為真</text>
+                <text x="60" y="255" style="font-size:10px;">(執行對應程式碼)</text>
 
                 <!-- Inner False 1 -> Statement 2 -->
-                <line x1="240" y1="145" x2="280" y2="210" class="line" />
-                <text x="270" y="175" class="line-text" style="fill:#ff79c6;">False</text>
-                <rect x="140" y="210" width="140" height="50" class="node-rect" />
-                <text x="210" y="230" style="font-size:10px;">內層條件判斷1不成立時，</text>
-                <text x="210" y="245" style="font-size:10px;">執行的程式碼</text>
+                <line x1="270" y1="145" x2="310" y2="220" class="line" />
+                <text x="300" y="175" class="line-text" style="fill:#ff79c6;">False</text>
+                <rect x="250" y="220" width="130" height="50" class="node-rect" />
+                <text x="315" y="240" style="font-size:10px;">A 為真，但 B 為假</text>
+                <text x="315" y="255" style="font-size:10px;">(執行 else 程式碼)</text>
 
                 <!-- False Branch (Right) -->
-                <line x1="420" y1="50" x2="520" y2="110" class="line" />
-                <text x="480" y="72" class="line-text" style="fill:#ff5555;">False</text>
+                <line x1="460" y1="50" x2="570" y2="110" class="line" />
+                <text x="525" y="72" class="line-text" style="fill:#ff5555;">False</text>
 
-                <polygon points="520,110 600,145 520,180 440,145" class="node-diamond" />
-                <text x="520" y="145" style="font-size:11px;">內層條件判斷2</text>
+                <polygon points="570,110 650,145 570,180 490,145" class="node-diamond" />
+                <text x="570" y="145" style="font-size:11px;">其他條件判斷</text>
 
-                <!-- Inner True 2 -> Statement 3 -->
-                <line x1="440" y1="145" x2="400" y2="210" class="line" />
-                <text x="410" y="175" class="line-text" style="fill:#50fa7b;">True</text>
-                <rect x="300" y="210" width="140" height="50" class="node-rect" />
-                <text x="370" y="230" style="font-size:10px;">內層條件判斷2成立時，</text>
-                <text x="370" y="245" style="font-size:10px;">執行的程式碼</text>
-
-                <!-- Inner False 2 -> Statement 4 -->
-                <line x1="600" y1="145" x2="640" y2="210" class="line" />
-                <text x="630" y="175" class="line-text" style="fill:#ff5555;">False</text>
-                <rect x="460" y="210" width="140" height="50" class="node-rect" />
-                <text x="530" y="230" style="font-size:10px;">內層條件判斷2不成立時，</text>
-                <text x="530" y="245" style="font-size:10px;">執行的程式碼</text>
+                <!-- Inner False -> Outer Else Statement -->
+                <line x1="570" y1="180" x2="570" y2="220" class="line" />
+                <text x="585" y="195" class="line-text" style="fill:#50fa7b;">True/False</text>
+                <rect x="510" y="220" width="120" height="50" class="node-rect" />
+                <text x="570" y="240" style="font-size:10px;">當條件 A 為假時</text>
+                <text x="570" y="255" style="font-size:10px;">(執行外層 else)</text>
             </svg>
         </div>
     </div>
