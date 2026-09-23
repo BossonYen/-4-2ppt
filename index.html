@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C++ 選擇結構 4-2 if...else if...else及巢狀if</title>
+    <title>C++ 選擇結構 4-2 完整互動教學網頁</title>
     <!-- 引入 Mermaid.js 用於動態視覺化流程圖 -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <style>
@@ -72,14 +72,9 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            animation: fadeIn 0.4s ease-in-out;
         }
         .tab-content.active {
             display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         .cover-box {
             text-align: center;
@@ -218,17 +213,17 @@
 <body>
 
 <header>
-    <h1>C++ 程式設計：選擇結構 4-2 if...else if...else及巢狀if</h1>
+    <h1>C++ 程式設計：選擇結構 4-2 完整互動教學</h1>
     <p>深入多重分支 if...else if...else 與巢狀條件判斷、實作演練與除錯解析</p>
 </header>
 
-<!-- 頂部導覽列：切換不同主題頁籤 -->
+<!-- 頂部導覽列 -->
 <nav>
-    <a onclick="switchTab('tab-cover')" id="link-tab-cover" class="active">🏠 首頁封面</a>
-    <a onclick="switchTab('tab-elseif')" id="link-tab-elseif">1. if...else if...else</a>
-    <a onclick="switchTab('tab-nested')" id="link-tab-nested">2. 巢狀 if 敘述</a>
-    <a onclick="switchTab('tab-practice')" id="link-tab-practice">3. 動手做練習 (4題)</a>
-    <a onclick="switchTab('tab-mistakes')" id="link-tab-mistakes">4. 易錯觀念與陷阱</a>
+    <a data-target="tab-cover" class="nav-link active">🏠 首頁封面</a>
+    <a data-target="tab-elseif" class="nav-link">1. if...else if...else</a>
+    <a data-target="tab-nested" class="nav-link">2. 巢狀 if 敘述</a>
+    <a data-target="tab-practice" class="nav-link">3. 動手做練習 (4題)</a>
+    <a data-target="tab-mistakes" class="nav-link">4. 易錯觀念與陷阱</a>
 </nav>
 
 <div class="container">
@@ -244,7 +239,7 @@
                 <p>各位同學好！在前面的單元中，我們學會了用 <code>if...else</code> 處理二分法選擇[cite: 1]。但在真實世界中，狀況往往更加複雜（例如：溫度控制、成績等級評定、計費級距等）[cite: 1]。這時候我們就需要使用 <strong><code>if...else if...else</code> 多重分支</strong> 與 <strong>巢狀 <code>if</code></strong>。請點擊下方按鈕開始本次的學習旅程！</p>
             </div>
 
-            <button class="start-btn" onclick="switchTab('tab-elseif')">👉 點擊開始進入課程內容</button>
+            <button class="start-btn" id="startCourseBtn">👉 點擊開始進入課程內容</button>
         </div>
     </div>
 
@@ -266,7 +261,7 @@ else {
 
         <h3>2. 互動按鈕生成流程圖</h3>
         <p>點擊下方按鈕即可動態載入並顯示多重分支（else-if ladder）的執行邏輯流程圖：</p>
-        <button class="btn-action" onclick="generateElseIfChart()">📊 生成 else-if 流程圖</button>
+        <button class="btn-action" id="genElseIfChartBtn">📊 生成 else-if 流程圖</button>
         <div class="flowchart-container" id="elseif-chart-box">
             <p style="color: #7f8c8d; margin: 0;">(點擊上方按鈕以產生流程圖)</p>
         </div>
@@ -304,7 +299,7 @@ int main() {
             <h3>🎮 動態互動測試：模擬成績等級判定</h3>
             <label>輸入學生分數 (0-100)：</label>
             <input type="number" id="gradeInput" value="85">
-            <button class="btn-action" onclick="testGrade()">送出判定</button>
+            <button class="btn-action" id="testGradeBtn">送出判定</button>
             <div id="gradeResult" class="result"></div>
         </div>
     </div>
@@ -328,7 +323,7 @@ int main() {
 
         <h3>2. 互動按鈕生成巢狀流程圖</h3>
         <p>點擊下方按鈕生成巢狀選擇結構的邏輯分流圖：</p>
-        <button class="btn-action" onclick="generateNestedChart()">📊 生成巢狀 if 流程圖</button>
+        <button class="btn-action" id="genNestedChartBtn">📊 生成巢狀 if 流程圖</button>
         <div class="flowchart-container" id="nested-chart-box">
             <p style="color: #7f8c8d; margin: 0;">(點擊上方按鈕以產生流程圖)</p>
         </div>
@@ -424,20 +419,42 @@ int main() {
 </footer>
 
 <script>
-    function switchTab(tabId) {
+    // 獨立分頁切換函式
+    function switchTab(targetId) {
         const contents = document.querySelectorAll('.tab-content');
         contents.forEach(content => content.classList.remove('active'));
 
-        const links = document.querySelectorAll('nav a');
+        const links = document.querySelectorAll('.nav-link');
         links.forEach(link => link.classList.remove('active'));
 
-        document.getElementById(tabId).classList.add('active');
-        document.getElementById('link-' + tabId).classList.add('active');
+        const targetContent = document.getElementById(targetId);
+        if (targetContent) {
+            targetContent.classList.add('active');
+        }
+
+        const targetLink = document.querySelector(`.nav-link[data-target="${targetId}"]`);
+        if (targetLink) {
+            targetLink.classList.add('active');
+        }
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // 綁定導覽列點擊事件
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            switchTab(targetId);
+        });
+    });
+
+    // 綁定首頁「進入課程內容」按鈕
+    document.getElementById('startCourseBtn').addEventListener('click', function() {
+        switchTab('tab-elseif');
+    });
+
     // 動態生成 else-if 流程圖
-    function generateElseIfChart() {
+    document.getElementById('genElseIfChartBtn').addEventListener('click', function() {
         const box = document.getElementById('elseif-chart-box');
         box.innerHTML = `<div class="mermaid">
             graph TD
@@ -455,10 +472,10 @@ int main() {
                 D --> J
         </div>`;
         mermaid.init(undefined, box.querySelectorAll('.mermaid'));
-    }
+    });
 
     // 動態生成巢狀 if 流程圖
-    function generateNestedChart() {
+    document.getElementById('genNestedChartBtn').addEventListener('click', function() {
         const box = document.getElementById('nested-chart-box');
         box.innerHTML = `<div class="mermaid">
             graph TD
@@ -474,28 +491,29 @@ int main() {
                 H --> I
         </div>`;
         mermaid.init(undefined, box.querySelectorAll('.mermaid'));
-    }
+    });
 
-    function testGrade() {
+    // 成績等級判定測試
+    document.getElementById('testGradeBtn').addEventListener('click', function() {
         let score = Number(document.getElementById('gradeInput').value);
         let resDiv = document.getElementById('gradeResult');
-        if (score &lt; 0 || score &gt; 100) {
+        if (score < 0 || score > 100) {
             resDiv.innerHTML = `輸入分數 ${score}：錯誤！請輸入 0 到 100 之間。`;
             resDiv.style.backgroundColor = "#fadbd8";
             resDiv.style.color = "#c0392b";
-        } else if (score &gt;= 90) {
+        } else if (score >= 90) {
             resDiv.innerHTML = `輸入分數 ${score}：等級 A (表現優異)`;
             resDiv.style.backgroundColor = "#e8f8f5";
             resDiv.style.color = "#27ae60";
-        } else if (score &gt;= 80) {
+        } else if (score >= 80) {
             resDiv.innerHTML = `輸入分數 ${score}：等級 B (表現良好)`;
             resDiv.style.backgroundColor = "#e8f8f5";
             resDiv.style.color = "#27ae60";
-        } else if (score &gt;= 70) {
+        } else if (score >= 70) {
             resDiv.innerHTML = `輸入分數 ${score}：等級 C (表現尚可)`;
             resDiv.style.backgroundColor = "#eaf2f8";
             resDiv.style.color = "#2980b9";
-        } else if (score &gt;= 60) {
+        } else if (score >= 60) {
             resDiv.innerHTML = `輸入分數 ${score}：等級 D (及格)`;
             resDiv.style.backgroundColor = "#fcf3cf";
             resDiv.style.color = "#d35400";
@@ -504,7 +522,7 @@ int main() {
             resDiv.style.backgroundColor = "#fadbd8";
             resDiv.style.color = "#c0392b";
         }
-    }
+    });
 </script>
 
 </body>
