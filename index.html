@@ -222,7 +222,7 @@
     <a data-target="tab-cover" class="nav-link active">🏠 首頁封面</a>
     <a data-target="tab-elseif" class="nav-link">1. if...else if...else</a>
     <a data-target="tab-nested" class="nav-link">2. 巢狀 if 敘述</a>
-    <a data-target="tab-practice" class="nav-link">3. 動手做練習 (4題)</a>
+    <a data-target="tab-practice" class="nav-link">3. 動手做練習 (2題)</a>
     <a data-target="tab-mistakes" class="nav-link">4. 易錯觀念與陷阱</a>
 </nav>
 
@@ -232,11 +232,11 @@
     <div id="tab-cover" class="tab-content active">
         <div class="cover-box">
             <h2>🚀 歡迎來到 C++ 選擇結構 4-2 進階殿堂</h2>
-            <p>本單元將帶領您突破二分法限制，學會處理多種可能性的決策結構[cite: 1]。</p>
+            <p>本單元將帶領您突破二分法限制，學會處理多種可能性的決策結構。</p>
             
             <div class="welcome-box">
                 <h3>👋 老師的學習引導語</h3>
-                <p>各位同學好！在前面的單元中，我們學會了用 <code>if...else</code> 處理二分法選擇[cite: 1]。但在真實世界中，狀況往往更加複雜（例如：溫度控制、成績等級評定、計費級距等）[cite: 1]。這時候我們就需要使用 <strong><code>if...else if...else</code> 多重分支</strong> 與 <strong>巢狀 <code>if</code></strong>。請點擊下方按鈕開始本次的學習旅程！</p>
+                <p>各位同學好！在前面的單元中，我們學會了用 <code>if...else</code> 處理二分法選擇。但在真實世界中，狀況往往更加複雜（例如：電費級距計算、票價與優惠折扣判定等）。這時候我們就需要使用 <strong><code>if...else if...else</code> 多重分支</strong> 與 <strong>巢狀 <code>if</code></strong>。請點擊下方按鈕開始本次的學習旅程！</p>
             </div>
 
             <button class="start-btn" id="startCourseBtn">👉 點擊開始進入課程內容</button>
@@ -246,7 +246,7 @@
     <!-- 主題一：if...else if...else -->
     <div id="tab-elseif" class="tab-content">
         <h2>多重分支：if...else if...else 結構介紹</h2>
-        <p>當條件超過兩個以上時，單純的 <code>if...else</code> 無法滿足需求，必須使用 <code>if...else if...else</code> 來依序比對多種可能性[cite: 1]。</p>
+        <p>當條件超過兩個以上時，單純的 <code>if...else</code> 無法滿足需求，必須使用 <code>if...else if...else</code> 來依序比對多種可能性。</p>
         
         <h3>1. 語法結構格式</h3>
         <pre><code>if (條件A) {
@@ -260,54 +260,51 @@ else {
 }</code></pre>
 
         <h3>2. 互動按鈕生成流程圖</h3>
-        <p>點擊下方按鈕即可動態載入並顯示多重分支（else-if ladder）的執行邏輯流程圖：</p>
-        <button class="btn-action" id="genElseIfChartBtn">📊 生成 else-if 流程圖</button>
+        <p>點擊下方按鈕即可動態載入並顯示「電費分段計費」的多重分支執行邏輯流程圖：</p>
+        <button class="btn-action" id="genElseIfChartBtn">📊 生成電費級距流程圖</button>
         <div class="flowchart-container" id="elseif-chart-box">
             <p style="color: #7f8c8d; margin: 0;">(點擊上方按鈕以產生流程圖)</p>
         </div>
 
-        <h3>3. 範例：輸入成績評定等級（A~F）</h3>
+        <h3>3. 範例：家用電費分段級距計算</h3>
         <pre><code>#include &lt;iostream&gt;
 using namespace std;
 int main() {
-    int score;
-    cout &lt;&lt; "請輸入分數 (0-100) :";
-    cin &gt;&gt; score;
+    int kwh;
+    double bill = 0.0;
+    cout &lt;&lt; "請輸入本月用電度數：";
+    cin &gt;&gt; kwh;
     
-    if (score &lt; 0 || score &gt; 100) {
-        cout &lt;&lt; "輸入錯誤！分數必須在 0 到 100 之間。" &lt;&lt; endl;
+    if (kwh &lt;= 120) {
+        bill = kwh * 1.63;
     }
-    else if (score &gt;= 90) {
-        cout &lt;&lt; "等級：A (表現優異)" &lt;&lt; endl;
+    else if (kwh &lt;= 330) {
+        bill = 120 * 1.63 + (kwh - 120) * 2.10;
     }
-    else if (score &gt;= 80) {
-        cout &lt;&lt; "等級：B (表現良好)" &lt;&lt; endl;
-    }
-    else if (score &gt;= 70) {
-        cout &lt;&lt; "等級：C (表現尚可)" &lt;&lt; endl;
-    }
-    else if (score &gt;= 60) {
-        cout &lt;&lt; "等級：D (及格)" &lt;&lt; endl;
+    else if (kwh &lt;= 500) {
+        bill = 120 * 1.63 + 210 * 2.10 + (kwh - 330) * 2.89;
     }
     else {
-        cout &lt;&lt; "等級：F (不及格)" &lt;&lt; endl;
+        bill = 120 * 1.63 + 210 * 2.10 + 170 * 2.89 + (kwh - 500) * 3.94;
     }
+    
+    cout &lt;&lt; "本月預估電費總計：" &lt;&lt; bill &lt;&lt; " 元" &lt;&lt; endl;
     return 0;
 }</code></pre>
 
         <div class="interactive-box">
-            <h3>🎮 動態互動測試：模擬成績等級判定</h3>
-            <label>輸入學生分數 (0-100)：</label>
-            <input type="number" id="gradeInput" value="85">
-            <button class="btn-action" id="testGradeBtn">送出判定</button>
-            <div id="gradeResult" class="result"></div>
+            <h3>🎮 動態互動測試：模擬電費試算</h3>
+            <label>輸入用電度數：</label>
+            <input type="number" id="kwhInput" value="250">
+            <button class="btn-action" id="testElectricityBtn">計算電費</button>
+            <div id="electricityResult" class="result"></div>
         </div>
     </div>
 
     <!-- 主題二：巢狀 if 敘述 -->
     <div id="tab-nested" class="tab-content">
         <h2>巢狀 if 敘述 (Nested if)</h2>
-        <p>當一個條件成立之後，還要進行第二層甚至更多層的細部條件判斷時，就會用到巢狀 <code>if</code>[cite: 1]。</p>
+        <p>當一個條件成立之後，還要進行第二層甚至更多層的細部條件判斷時，就會用到巢狀 <code>if</code>。</p>
 
         <h3>1. 格式說明</h3>
         <pre><code>if (條件A) {
@@ -322,78 +319,95 @@ int main() {
 }</code></pre>
 
         <h3>2. 互動按鈕生成巢狀流程圖</h3>
-        <p>點擊下方按鈕生成巢狀選擇結構的邏輯分流圖：</p>
-        <button class="btn-action" id="genNestedChartBtn">📊 生成巢狀 if 流程圖</button>
+        <p>點擊下方按鈕生成「遊樂園門票與快速通關購買判定」的邏輯分流圖：</p>
+        <button class="btn-action" id="genNestedChartBtn">📊 生成遊樂園購票巢狀流程圖</button>
         <div class="flowchart-container" id="nested-chart-box">
             <p style="color: #7f8c8d; margin: 0;">(點擊上方按鈕以產生流程圖)</p>
         </div>
 
-        <h3>3. 範例：電影院門票優惠計算</h3>
+        <h3>3. 範例：遊樂園門票與快速通關購買判定</h3>
         <pre><code>#include &lt;iostream&gt;
 using namespace std;
 int main() {
-    int age;
-    char hasStudentCard;
-    cout &lt;&lt; "請輸入您的年齡：";
-    cin &gt;&gt; age;
+    int height;
+    char hasFastPass;
+    cout &lt;&lt; "請輸入您的身高 (公分)：";
+    cin &gt;&gt; height;
     
-    // 第一層：判斷年齡是否符合基本票價條件 (12~64歲)
-    if (age &gt;= 12 &amp;&amp; age &lt; 65) {
-        cout &lt;&lt; "請問是否有學生證？(y/n)：";
-        cin &gt;&gt; hasStudentCard;
+    // 第一層：檢查身高是否達到遊樂設施基本安全門檻 (130公分以上)
+    if (height &gt;= 130) {
+        cout &lt;&lt; "身高合格！請問是否有購買快速通關？(y/n)：";
+        cin &gt;&gt; hasFastPass;
         
-        // 第二層巢狀：根據是否有學生證給予不同折扣
-        if (hasStudentCard == 'y' || hasStudentCard == 'Y') {
-            cout &lt;&lt; "符合學生優惠！門票價格為：150 元" &lt;&lt; endl;
+        // 第二層巢狀：根據是否有快速通關安排專屬通道
+        if (hasFastPass == 'y' || hasFastPass == 'Y') {
+            cout &lt;&lt; "請走【VIP 快速通關通道】，優先搭乘！" &lt;&lt; endl;
         } else {
-            cout &lt;&lt; "一般成人票，門票價格為：250 元" &lt;&lt; endl;
+            cout &lt;&lt; "請走【一般排隊通道】，預計等待 40 分鐘。" &lt;&lt; endl;
         }
     } else {
-        // 未滿 12 歲或 65 歲以上
-        cout &lt;&lt; "符合兒童/敬老特惠！門票價格為：100 元" &lt;&lt; endl;
+        cout &lt;&lt; "未滿 130 公分，基於安全考量無法搭乘此項設施。" &lt;&lt; endl;
     }
     return 0;
 }</code></pre>
     </div>
 
-    <!-- 主題三：動手做練習 (4題) -->
+    <!-- 主題三：動手做練習 (2題) -->
     <div id="tab-practice" class="tab-content">
-        <h2>📝 動手做綜合練習（共 4 題）</h2>
-        <p>請參考講義中的實作題組，測試您的程式邏輯與除錯能力[cite: 1]：</p>
+        <h2>📝 動手做綜合練習（共 2 題）</h2>
+        <p>請依據下列兩題所提供的邏輯流程圖，動手完成對應的程式邏輯思維：</p>
 
         <div class="tool-box">
-            <h3>練習題 1：三角形類型判斷（填空題）</h3>
-            <p>補齊程式碼中的 A、B、C、D、E 空格，利用畢氏定理與兩邊之和大於第三邊來判斷三角形（銳角、直角、鈍角）[cite: 1]。</p>
+            <h3>練習題 1：體溫異常等級多重分支判斷</h3>
+            <p><strong>題目說明：</strong>請參考以下多重分支邏輯圖，設計一個輸入體溫（單位：°C）並輸出健康狀態的程式。</p>
+            <div class="flowchart-container">
+                <div class="mermaid">
+                    graph TD
+                        A([開始]) --> B[/輸入體溫 temp/]
+                        B --> C{temp &gt;= 38.0?}
+                        C -- Yes --> D[/輸出: 發燒/請就醫/]
+                        C -- No --> E{temp &gt;= 37.5?}
+                        E -- Yes --> F[/輸出: 微燒/請注意/]
+                        E -- No --> G[/輸出: 體溫正常/]
+                        D --> H([結束])
+                        F --> H
+                        G --> H
+                </div>
+            </div>
         </div>
 
         <div class="tool-box">
-            <h3>練習題 2：累進工資計算（測資追蹤）</h3>
-            <p>依據工作時數分段計薪（60小時內基本工資；61-75小時1.25倍；75小時以上1.75倍）[cite: 1]，計算測資 80、59、70、88、100 小時的應領薪資[cite: 1]。</p>
-        </div>
-
-        <div class="tool-box">
-            <h3>練習題 3：閏年判斷程式除錯（Find Bugs）</h3>
-            <p>找出判斷閏年程式碼中的 4 處語法或邏輯錯誤（包含運算子誤用與條件順序問題）[cite: 1]。</p>
-        </div>
-
-        <div class="tool-box">
-            <h3>練習題 4：座標象限判斷</h3>
-            <p>輸入 (x, y) 座標，透過多重分支正確判斷其位於原點、x 軸、y 軸或第一至第四象限[cite: 1]。</p>
+            <h3>練習題 2：會員等級與購物金折扣巢狀判定</h3>
+            <p><strong>題目說明：</strong>請參考以下巢狀選擇結構流程圖，先判斷是否為 VIP 會員，若是再根據消費金額決定折價方式。</p>
+            <div class="flowchart-container">
+                <div class="mermaid">
+                    graph TD
+                        A([開始]) --> B[/輸入是否為VIP: isVIP / 輸入消費金額: amount/]
+                        B --> C{isVIP == true?}
+                        C -- Yes --> D{amount &gt;= 2000?}
+                        D -- Yes --> E[/享 8 折優惠/]
+                        D -- No --> F[/享 9 折優惠/]
+                        C -- No --> G[/無折扣，原價計費/]
+                        E --> H([結束])
+                        F --> H
+                        G --> H
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- 主題四：易錯觀念與陷阱 (新增 3 個) -->
+    <!-- 主題四：易錯觀念與陷阱 -->
     <div id="tab-mistakes" class="tab-content">
         <h2>⚠️ 學生最易犯錯的 5 大觀念與寫程式陷阱</h2>
         
         <div class="warning-box">
             <h3>陷阱一：多重分支條件順序顛倒（邏輯覆蓋錯誤）</h3>
-            <p>在 <code>if...else if...else</code> 中，條件是<strong>由上往下依序比對</strong>[cite: 1]。如果把範圍大的條件寫在最上面（例如先寫 <code>score &gt;= 60</code> 再寫 <code>score &gt;= 90</code>），那麼 90 分以上的成績會在通過第一關時就被攔截，導致永遠無法執行到 A 等級的判斷。</p>
+            <p>在 <code>if...else if...else</code> 中，條件是<strong>由上往下依序比對</strong>。如果把範圍大的條件寫在最上面，那麼數值會在通過第一關時就被攔截，導致永遠無法執行到後續更精細的條件判斷。</p>
         </div>
 
         <div class="warning-box">
             <h3>陷阱二：巢狀結構中大括號配對錯誤導致「懸置 else (Dangling else)」</h3>
-            <p>當有多層 <code>if...else</code> 卻省略大括號時，<code>else</code> 會自動與<strong>最近且尚未配對的 <code>if</code></strong> 結合。這常導致邏輯解讀與程式實際執行路徑不一致，強烈建議每一層都要加上 <code>{}</code>。</p>
+            <p>當有多層 <code>if...else</code> 卻省略大括號時，<code>else</code> 會自動與<strong>最近且尚未配對的 <code>if</code></strong> 結合。這常導致邏輯解讀與程式實際執行路徑不一致，建議每一層都要加上 <code>{}</code>。</p>
         </div>
 
         <div class="warning-box">
@@ -403,12 +417,12 @@ int main() {
 
         <div class="warning-box">
             <h3>陷阱四：條件區間交疊或不連續（漏失數值區間）</h3>
-            <p>例如想表達 60 到 70 分，卻寫成 <code>score &gt;= 60</code> 與 <code>score &lt; 65</code> 中間留下斷層，導致 65~69 分的分數變成「灰色地帶」無法被正確歸類。</p>
+            <p>例如想表達不同區段的數值，卻在撰寫時留下了斷層，導致部分邊界數值變成「灰色地帶」無法被正確歸類。</p>
         </div>
 
         <div class="warning-box">
             <h3>陷阱五：在巢狀條件內重複宣告同名變數</h3>
-            <p>在不同的內層區塊中不小心重複宣告相同名稱的區域變數，導致變數有效範圍（Scope）混淆，編譯器報錯或抓錯資料。</p>
+            <p>在不同的內層區塊中不小心重複宣告相同名稱的區域變數，導致變數有效範圍混淆，造成編譯器報錯。</p>
         </div>
     </div>
 
@@ -419,6 +433,9 @@ int main() {
 </footer>
 
 <script>
+    // 初始化 Mermaid
+    mermaid.initialize({ startOnLoad: false });
+
     // 獨立分頁切換函式
     function switchTab(targetId) {
         const contents = document.querySelectorAll('.tab-content');
@@ -453,39 +470,36 @@ int main() {
         switchTab('tab-elseif');
     });
 
-    // 動態生成 else-if 流程圖
+    // 動態生成電費級距流程圖
     document.getElementById('genElseIfChartBtn').addEventListener('click', function() {
         const box = document.getElementById('elseif-chart-box');
         box.innerHTML = `<div class="mermaid">
             graph TD
-                A([開始]) --> B[/輸入成績 score/]
-                B --> C{score &lt; 0 或 &gt; 100?}
-                C -- Yes --> D[/輸出: 輸入錯誤/]
-                C -- No --> E{score &gt;= 90?}
-                E -- Yes --> F[/等級 A/]
-                E -- No --> G{score &gt;= 80?}
-                G -- Yes --> H[/等級 B/]
-                G -- No --> I[...]
-                F --> J([結束])
-                H --> J
-                I --> J
-                D --> J
+                A([開始]) --> B[/輸入用電度數 kwh/]
+                B --> C{kwh &lt;= 120?}
+                C -- Yes --> D[/計費: kwh * 1.63/]
+                C -- No --> E{kwh &lt;= 330?}
+                E -- Yes --> F[/計費: 120段 + 剩餘*2.10/]
+                E -- No --> G[...]
+                D --> H([結束])
+                F --> H
+                G --> H
         </div>`;
         mermaid.init(undefined, box.querySelectorAll('.mermaid'));
     });
 
-    // 動態生成巢狀 if 流程圖
+    // 動態生成遊樂園購票巢狀流程圖
     document.getElementById('genNestedChartBtn').addEventListener('click', function() {
         const box = document.getElementById('nested-chart-box');
         box.innerHTML = `<div class="mermaid">
             graph TD
-                A([開始]) --> B[/輸入年齡 age/]
-                B --> C{12 &lt;= age &lt; 65?}
-                C -- Yes --> D[/輸入是否有學生證/]
-                D --> E{有學生證?}
-                E -- Yes --> F[/學生票 150元/]
-                E -- No --> G[/成人票 250元/]
-                C -- No --> H[/敬老/兒童票 100元/]
+                A([開始]) --> B[/輸入身高 height/]
+                B --> C{height &gt;= 130?}
+                C -- Yes --> D[/輸入是否有快速通關/]
+                D --> E{有快速通關?}
+                E -- Yes --> F[/VIP 快速通關通道/]
+                E -- No --> G[/一般排隊通道/]
+                C -- No --> H[/身高未達標準，無法搭乘/]
                 F --> I([結束])
                 G --> I
                 H --> I
@@ -493,35 +507,32 @@ int main() {
         mermaid.init(undefined, box.querySelectorAll('.mermaid'));
     });
 
-    // 成績等級判定測試
-    document.getElementById('testGradeBtn').addEventListener('click', function() {
-        let score = Number(document.getElementById('gradeInput').value);
-        let resDiv = document.getElementById('gradeResult');
-        if (score < 0 || score > 100) {
-            resDiv.innerHTML = `輸入分數 ${score}：錯誤！請輸入 0 到 100 之間。`;
+    // 電費計算互動測試
+    document.getElementById('testElectricityBtn').addEventListener('click', function() {
+        let kwh = Number(document.getElementById('kwhInput').value);
+        let resDiv = document.getElementById('electricityResult');
+        let bill = 0.0;
+
+        if (kwh < 0) {
+            resDiv.innerHTML = `度數 ${kwh}：輸入錯誤，度數不能為負數！`;
             resDiv.style.backgroundColor = "#fadbd8";
             resDiv.style.color = "#c0392b";
-        } else if (score >= 90) {
-            resDiv.innerHTML = `輸入分數 ${score}：等級 A (表現優異)`;
-            resDiv.style.backgroundColor = "#e8f8f5";
-            resDiv.style.color = "#27ae60";
-        } else if (score >= 80) {
-            resDiv.innerHTML = `輸入分數 ${score}：等級 B (表現良好)`;
-            resDiv.style.backgroundColor = "#e8f8f5";
-            resDiv.style.color = "#27ae60";
-        } else if (score >= 70) {
-            resDiv.innerHTML = `輸入分數 ${score}：等級 C (表現尚可)`;
-            resDiv.style.backgroundColor = "#eaf2f8";
-            resDiv.style.color = "#2980b9";
-        } else if (score >= 60) {
-            resDiv.innerHTML = `輸入分數 ${score}：等級 D (及格)`;
-            resDiv.style.backgroundColor = "#fcf3cf";
-            resDiv.style.color = "#d35400";
-        } else {
-            resDiv.innerHTML = `輸入分數 ${score}：等級 F (不及格)`;
-            resDiv.style.backgroundColor = "#fadbd8";
-            resDiv.style.color = "#c0392b";
+            return;
         }
+
+        if (kwh <= 120) {
+            bill = kwh * 1.63;
+        } else if (kwh <= 330) {
+            bill = 120 * 1.63 + (kwh - 120) * 2.10;
+        } else if (kwh <= 500) {
+            bill = 120 * 1.63 + 210 * 2.10 + (kwh - 330) * 2.89;
+        } else {
+            bill = 120 * 1.63 + 210 * 2.10 + 170 * 2.89 + (kwh - 500) * 3.94;
+        }
+
+        resDiv.innerHTML = `用電 ${kwh} 度：預估電費總計 ${bill.toFixed(2)} 元`;
+        resDiv.style.backgroundColor = "#e8f8f5";
+        resDiv.style.color = "#27ae60";
     });
 </script>
 
