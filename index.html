@@ -236,7 +236,7 @@
             
             <div class="welcome-box">
                 <h3>👋 老師的學習引導語</h3>
-                <p>各位同學好！在前面的單元中，我們學會了用 <code>if...else</code> 處理二分法選擇。但在真實世界中，狀況往往更加複雜（例如：電費級距計算、票價與優惠折扣判定等）。這時候我們就需要使用 <strong><code>if...else if...else</code> 多重分支</strong> 與 <strong>巢狀 <code>if</code></strong>。請點擊下方按鈕開始本次的學習旅程！</p>
+                <p>各位同學好！在前面的單元中，我們學會了用 <code>if...else</code> 處理二分法選擇。但在真實世界中，狀況往往更加複雜（例如：成績評定、優惠折扣判定等）。這時候我們就需要使用 <strong><code>if...else if...else</code> 多重分支</strong> 與 <strong>巢狀 <code>if</code></strong>。請點擊下方按鈕開始本次的學習旅程！</p>
             </div>
 
             <button class="start-btn" id="startCourseBtn">👉 點擊開始進入課程內容</button>
@@ -256,48 +256,43 @@ else if (條件B) {
     // 當「條件A」不成立，且「條件B」成立時執行
 } 
 else {
-    // 以上所有條件都不成立時執行（可選）
+    // 以上所有條件都不成立時執行
 }</code></pre>
 
         <h3>2. 互動按鈕生成流程圖</h3>
-        <p>點擊下方按鈕即可動態載入並顯示「電費分段計費」的多重分支執行邏輯流程圖：</p>
-        <button class="btn-action" id="genElseIfChartBtn">📊 生成電費級距流程圖</button>
+        <p>點擊下方按鈕即可動態載入並顯示簡單的 <code>if...else if...else</code> 執行邏輯流程圖：</p>
+        <button class="btn-action" id="genElseIfChartBtn">📊 生成簡單選擇流程圖</button>
         <div class="flowchart-container" id="elseif-chart-box">
             <p style="color: #7f8c8d; margin: 0;">(點擊上方按鈕以產生流程圖)</p>
         </div>
 
-        <h3>3. 範例：家用電費分段級距計算</h3>
+        <h3>3. 範例：成績簡單評定（優秀、及格、不及格）</h3>
         <pre><code>#include &lt;iostream&gt;
 using namespace std;
 int main() {
-    int kwh;
-    double bill = 0.0;
-    cout &lt;&lt; "請輸入本月用電度數：";
-    cin &gt;&gt; kwh;
+    int score;
+    cout &lt;&lt; "請輸入成績：";
+    cin &gt;&gt; score;
     
-    if (kwh &lt;= 120) {
-        bill = kwh * 1.63;
+    if (score &gt;= 90) {
+        cout &lt;&lt; "成績評定：優秀！" &lt;&lt; endl;
     }
-    else if (kwh &lt;= 330) {
-        bill = 120 * 1.63 + (kwh - 120) * 2.10;
-    }
-    else if (kwh &lt;= 500) {
-        bill = 120 * 1.63 + 210 * 2.10 + (kwh - 330) * 2.89;
+    else if (score &gt;= 60) {
+        cout &lt;&lt; "成績評定：及格。" &lt;&lt; endl;
     }
     else {
-        bill = 120 * 1.63 + 210 * 2.10 + 170 * 2.89 + (kwh - 500) * 3.94;
+        cout &lt;&lt; "成績評定：不及格。" &lt;&lt; endl;
     }
     
-    cout &lt;&lt; "本月預估電費總計：" &lt;&lt; bill &lt;&lt; " 元" &lt;&lt; endl;
     return 0;
 }</code></pre>
 
         <div class="interactive-box">
-            <h3>🎮 動態互動測試：模擬電費試算</h3>
-            <label>輸入用電度數：</label>
-            <input type="number" id="kwhInput" value="250">
-            <button class="btn-action" id="testElectricityBtn">計算電費</button>
-            <div id="electricityResult" class="result"></div>
+            <h3>🎮 動態互動測試：模擬成績評定</h3>
+            <label>輸入成績：</label>
+            <input type="number" id="scoreInput" value="85">
+            <button class="btn-action" id="testScoreBtn">送出判定</button>
+            <div id="scoreResult" class="result"></div>
         </div>
     </div>
 
@@ -365,10 +360,10 @@ int main() {
                     graph TD
                         A([開始]) --> B[/輸入體溫 temp/]
                         B --> C{temp &gt;= 38.0?}
-                        C -- Yes --> D[/輸出: 發燒/請就醫/]
+                        C -- Yes --> D[/輸出: 發燒/]
                         C -- No --> E{temp &gt;= 37.5?}
-                        E -- Yes --> F[/輸出: 微燒/請注意/]
-                        E -- No --> G[/輸出: 體溫正常/]
+                        E -- Yes --> F[/輸出: 微燒/]
+                        E -- No --> G[/輸出: 正常/]
                         D --> H([結束])
                         F --> H
                         G --> H
@@ -382,7 +377,7 @@ int main() {
             <div class="flowchart-container">
                 <div class="mermaid">
                     graph TD
-                        A([開始]) --> B[/輸入是否為VIP: isVIP / 輸入消費金額: amount/]
+                        A([開始]) --> B[/輸入是否為VIP / 消費金額/]
                         B --> C{isVIP == true?}
                         C -- Yes --> D{amount &gt;= 2000?}
                         D -- Yes --> E[/享 8 折優惠/]
@@ -433,8 +428,8 @@ int main() {
 </footer>
 
 <script>
-    // 初始化 Mermaid
-    mermaid.initialize({ startOnLoad: false });
+    // 初始化 Mermaid，設定 startOnLoad 為 true 讓靜態區塊自動渲染
+    mermaid.initialize({ startOnLoad: true });
 
     // 獨立分頁切換函式
     function switchTab(targetId) {
@@ -454,10 +449,15 @@ int main() {
             targetLink.classList.add('active');
         }
 
+        // 切換分頁時重新初始化該分頁內的 mermaid 流程圖
+        setTimeout(() => {
+            mermaid.init(undefined, document.querySelectorAll(`#${targetId} .mermaid`));
+        }, 50);
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 綁定導覽列點擊事件
+    // 導覽列點擊事件
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', function() {
             const targetId = this.getAttribute('data-target');
@@ -465,22 +465,22 @@ int main() {
         });
     });
 
-    // 綁定首頁「進入課程內容」按鈕
+    // 首頁按鈕
     document.getElementById('startCourseBtn').addEventListener('click', function() {
         switchTab('tab-elseif');
     });
 
-    // 動態生成電費級距流程圖
+    // 動態生成簡單的 if...else if...else 流程圖
     document.getElementById('genElseIfChartBtn').addEventListener('click', function() {
         const box = document.getElementById('elseif-chart-box');
         box.innerHTML = `<div class="mermaid">
             graph TD
-                A([開始]) --> B[/輸入用電度數 kwh/]
-                B --> C{kwh &lt;= 120?}
-                C -- Yes --> D[/計費: kwh * 1.63/]
-                C -- No --> E{kwh &lt;= 330?}
-                E -- Yes --> F[/計費: 120段 + 剩餘*2.10/]
-                E -- No --> G[...]
+                A([開始]) --> B[/輸入成績 score/]
+                B --> C{score &gt;= 90?}
+                C -- Yes --> D[/優秀/]
+                C -- No --> E{score &gt;= 60?}
+                E -- Yes --> F[/及格/]
+                E -- No --> G[/不及格/]
                 D --> H([結束])
                 F --> H
                 G --> H
@@ -507,32 +507,31 @@ int main() {
         mermaid.init(undefined, box.querySelectorAll('.mermaid'));
     });
 
-    // 電費計算互動測試
-    document.getElementById('testElectricityBtn').addEventListener('click', function() {
-        let kwh = Number(document.getElementById('kwhInput').value);
-        let resDiv = document.getElementById('electricityResult');
-        let bill = 0.0;
+    // 成績評定互動測試
+    document.getElementById('testScoreBtn').addEventListener('click', function() {
+        let score = Number(document.getElementById('scoreInput').value);
+        let resDiv = document.getElementById('scoreResult');
 
-        if (kwh < 0) {
-            resDiv.innerHTML = `度數 ${kwh}：輸入錯誤，度數不能為負數！`;
+        if (score < 0 || score > 100) {
+            resDiv.innerHTML = `成績 ${score}：輸入錯誤，必須在 0 到 100 之間！`;
             resDiv.style.backgroundColor = "#fadbd8";
             resDiv.style.color = "#c0392b";
             return;
         }
 
-        if (kwh <= 120) {
-            bill = kwh * 1.63;
-        } else if (kwh <= 330) {
-            bill = 120 * 1.63 + (kwh - 120) * 2.10;
-        } else if (kwh <= 500) {
-            bill = 120 * 1.63 + 210 * 2.10 + (kwh - 330) * 2.89;
+        if (score >= 90) {
+            resDiv.innerHTML = `成績 ${score} 分：成績評定：優秀！`;
+            resDiv.style.backgroundColor = "#e8f8f5";
+            resDiv.style.color = "#27ae60";
+        } else if (score >= 60) {
+            resDiv.innerHTML = `成績 ${score} 分：成績評定：及格。`;
+            resDiv.style.backgroundColor = "#eaf2f8";
+            resDiv.style.color = "#2980b9";
         } else {
-            bill = 120 * 1.63 + 210 * 2.10 + 170 * 2.89 + (kwh - 500) * 3.94;
+            resDiv.innerHTML = `成績 ${score} 分：成績評定：不及格。`;
+            resDiv.style.backgroundColor = "#fadbd8";
+            resDiv.style.color = "#c0392b";
         }
-
-        resDiv.innerHTML = `用電 ${kwh} 度：預估電費總計 ${bill.toFixed(2)} 元`;
-        resDiv.style.backgroundColor = "#e8f8f5";
-        resDiv.style.color = "#27ae60";
     });
 </script>
 
