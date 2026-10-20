@@ -231,7 +231,8 @@
     <!-- 0. 網頁封面與引導語分頁 -->
     <div id="tab-cover" class="tab-content active">
         <div class="cover-box">
-            <h2>選擇結構 4-2 if...elseif...else</h2>
+            <h2>🚀 歡迎來到 C++ 選擇結構 4-2 進階殿堂</h2>
+            <p>本單元將帶領您突破二分法限制，學會處理多種可能性的決策結構。</p>
             
             <div class="welcome-box">
                 <h3>👋 老師的學習引導語</h3>
@@ -427,8 +428,8 @@ int main() {
 </footer>
 
 <script>
-    // 初始化 Mermaid，設定 startOnLoad 為 true 讓靜態區塊自動渲染
-    mermaid.initialize({ startOnLoad: true });
+    // 初始化 Mermaid
+    mermaid.initialize({ startOnLoad: false });
 
     // 獨立分頁切換函式
     function switchTab(targetId) {
@@ -448,13 +449,18 @@ int main() {
             targetLink.classList.add('active');
         }
 
-        // 切換分頁時重新初始化該分頁內的 mermaid 流程圖
+        // 當切換到分頁時，重新強制渲染該分頁內的 mermaid 流程圖
         setTimeout(() => {
             mermaid.init(undefined, document.querySelectorAll(`#${targetId} .mermaid`));
         }, 50);
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    // 頁面載入完成後預先初始化目前預設顯示的分頁圖表
+    window.addEventListener('DOMContentLoaded', () => {
+        mermaid.init(undefined, document.querySelectorAll('#tab-cover .mermaid'));
+    });
 
     // 導覽列點擊事件
     document.querySelectorAll('.nav-link').forEach(link => {
